@@ -16,7 +16,8 @@ class Login(BoxLayout):
         super(Login, self).__init__(size_hint=(None,None), size=(400,300), orientation='vertical', **kwargs)
         self.center = Window.center
         
-        self.lb_superiormenu = Label(text='Tour    |    Sign up    |    Contact')
+        self.lb_superiormenu = Label(text='Tour    |    Sign up    |    Contact', markup=True)
+        
         
         self.lb_netget = Label(text='Netget', font_size=36)
         
@@ -58,6 +59,14 @@ class Netget(FloatLayout):
         #self.add_widget(self.img_loading)
         
         self.add_widget(Label(text='Iniciando sesion'))
+        
+        #enviar peticion de login al servidor principal
+        
+        
+        #poner icono de loading
+        
+        #
+        
 
 if __name__ == '__main__':
     
