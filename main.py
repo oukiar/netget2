@@ -144,7 +144,7 @@ class Netget(FloatLayout):
                 }
         
         #intentar crear cuenta
-        Request(action='http://www.orgboat.com/netget/nglogin.php', data=data, callback=self.res_signup)
+        Request(action='http://www.orgboat.com/netget/ngsignup.php', data=data, callback=self.res_signup)
         
     def res_signup(self, response):
         print response
