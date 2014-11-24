@@ -9,6 +9,22 @@ from kivy.uix.widget import Widget
 
 from kivy.graphics import Color, Rectangle
 from kivy.core.window import Window
+from kivy.animation import Animation
+
+
+from widget3D import Image3D
+
+class Loading(Image3D):
+    def __init__(self, **kwargs):
+        super(Loading, self).__init__(size_hint=(None, None), width=1, height=1, **kwargs)
+        
+        self.anim = Animation(rotate_z=360, duration=1)
+        self.anim.bind(on_complete=self.reanimate)
+        self.reanimate()
+        
+    def reanimate(self, anim=None, w=None):
+        self.rotate_z = 0
+        self.anim.start(self)
 
 class Login(BoxLayout):
     def __init__(self, **kwargs):
@@ -64,6 +80,8 @@ class Netget(FloatLayout):
         
         
         #poner icono de loading
+        self.imgloading = Loading(source='donutloading.png')
+        self.add_widget(self.imgloading)
         
         #
         
