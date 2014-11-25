@@ -17,9 +17,16 @@ from kivy.animation import Animation
 from widget3D import Image3D
 from utils import Request
 
+class TextBox(TextInput):
+    def __init__(self, **kwargs):
+        super(TextBox, self).__init__(**kwargs)
+    
+    def insert_text(self, substring, from_undo=False):
+        print substring
+
 class Loading(Image3D):
     def __init__(self, **kwargs):
-        super(Loading, self).__init__(size_hint=(None, None), width=1, height=1, **kwargs)
+        super(Loading, self).__init__(size_hint=(None, None), size=(70,70), **kwargs)
         
         self.reanimate()
         
@@ -36,10 +43,10 @@ class SignUp(Popup):
         
         self.layout = BoxLayout(padding=30, spacing=5, orientation='vertical')
         
-        self.email = TextInput(text='Email')
-        self.username = TextInput(text='Username')
-        self.password = TextInput(text='Password')
-        self.rpassword = TextInput(text='Retype Password')
+        self.email = TextBox(text='Email')
+        self.username = TextBox(text='Username')
+        self.password = TextBox(text='Password', password=True)
+        self.rpassword = TextBox(text='Retype Password', password=True)
         
         self.btn_submit = Button(text='Sign Up', size_hint_x=.7)
         
@@ -146,8 +153,28 @@ class Netget(FloatLayout):
         #intentar crear cuenta
         Request(action='http://www.orgboat.com/netget/ngsignup.php', data=data, callback=self.res_signup)
         
+        self.signup.dismiss()
+        
+        #----------
+        
+        #poner icono de loading
+        self.imgloading = Loading(source='loading.png')
+        self.add_widget(self.imgloading)
+        
+        self.boxlogin = CenterLog()
+        
+        self.boxlogin.add_widget(Label(text='[color=000000]Signing up in the netget network[/color]', markup=True))
+        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancel[/color]', markup=True))
+        
+        self.add_widget(self.boxlogin)
+        
     def res_signup(self, response):
-        print response
+        if response == "OK":
+            
+            print "Signup succesfull"
+            
+            self.remove_widget(self.imgloading)
+            self.remove_widget(self.boxlogin)
 
 if __name__ == '__main__':
     
