@@ -14,8 +14,12 @@ from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.clock import Clock
 
-from widget3D import Image3D
+from widget3D import Image3D, Widget3D
 from utils import Request
+
+
+
+
 
 class TextBox(TextInput):
     def __init__(self, **kwargs):
@@ -38,6 +42,25 @@ class TextBox(TextInput):
             self.select_all()
             
         super(TextBox, self).on_focus(w, val)
+
+class Searcher(Widget3D):
+    def __init__(self, **kwargs):
+        super(Searcher, self).__init__(pos_z=-280, pos_y=170, pos_x=-50, **kwargs)
+        
+        
+        self.layout = BoxLayout(size_hint=(None,None), width=300, height=30)
+        
+        self.img_find = Image(source='find_48x48.png', size_hint_x=None, width=50)
+        self.layout.add_widget(self.img_find)
+        
+        self.txt_search = TextBox(text='Keywords to search ...')
+        self.layout.add_widget(self.txt_search)
+        
+        
+        self.btn_search = Button(text='Send', size_hint_x=None, width=70)
+        self.layout.add_widget(self.btn_search)
+        
+        self.add_widget(self.layout)
 
 class Loading(Image3D):
     def __init__(self, **kwargs):
@@ -135,6 +158,9 @@ class Netget(FloatLayout):
         self.login.lb_superiormenu.bind(on_ref_press=self.on_headerloginpress)
         
         self.add_widget(self.login)
+
+
+        self.searcher = Searcher()
         
     def on_login(self, w):
         self.remove_widget(self.login)
@@ -208,6 +234,8 @@ class Netget(FloatLayout):
             
             self.remove_widget(self.imgloading)
             self.remove_widget(self.boxlogin)
+
+            self.add_widget(self.searcher)
 
 if __name__ == '__main__':
     
