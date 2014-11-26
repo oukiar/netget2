@@ -12,7 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle
 from kivy.core.window import Window
 from kivy.animation import Animation
-
+from kivy.clock import Clock
 
 from widget3D import Image3D
 from utils import Request
@@ -23,6 +23,21 @@ class TextBox(TextInput):
     
     def insert_text(self, substring, from_undo=False):
         print substring
+        
+        #if TAB was pressed
+        if substring == '\t':
+            #set the focus to the next children
+            self.parent.children[self.parent.children.index(self)-1].focus = True
+            return
+        
+        super(TextBox, self).insert_text(substring)
+        
+    def on_focus(self, w, val):
+        if val == True:
+            print "Selecting all text"
+            self.select_all()
+            
+        super(TextBox, self).on_focus(w, val)
 
 class Loading(Image3D):
     def __init__(self, **kwargs):
@@ -88,11 +103,16 @@ class CenterLog(BoxLayout):
         super(CenterLog, self).__init__(orientation='vertical', **kwargs)
         
     def add_widget(self, w, index=0):
-        anim = Animation(height=w.height, duration=.3)
-        w.height=0
-        anim.start(w)
+        
+        if len(self.children) > 0:
+
+            anim = Animation(opacity=1, height=w.height, duration=1)
+            w.height -= 50
+            w.opacity = 0
+            anim.start(w)
         
         super(CenterLog, self).add_widget(w, index)
+    
     
 
 class Netget(FloatLayout):
@@ -129,11 +149,15 @@ class Netget(FloatLayout):
         self.boxlogin = CenterLog()
         
         self.boxlogin.add_widget(Label(text='[color=000000]Iniciando sesion ...[/color]', markup=True))
+        
         self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True))
         
         self.add_widget(self.boxlogin)
         
-        #
+        #set the event for create the cancel option ... 
+        Clock.schedule_once(self.on_sendsignupdata, 3)
+        
+
         
     def on_headerloginpress(self, w, value):
         if value == 'signup':
@@ -145,14 +169,7 @@ class Netget(FloatLayout):
             
     def on_signup(self, w):
         
-        data = {'email':self.signup.email.text,
-                'username':self.signup.username.text,
-                'password':self.signup.password.text
-                }
-        
-        #intentar crear cuenta
-        Request(action='http://www.orgboat.com/netget/ngsignup.php', data=data, callback=self.res_signup)
-        
+
         self.signup.dismiss()
         
         #----------
@@ -164,9 +181,25 @@ class Netget(FloatLayout):
         self.boxlogin = CenterLog()
         
         self.boxlogin.add_widget(Label(text='[color=000000]Signing up in the netget network[/color]', markup=True))
-        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancel[/color]', markup=True))
+
+        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True, size_hint_y=None, height=500))
+        
+        #set the event for create the cancel option ... 
+        Clock.schedule_once(self.on_sendsignupdata, 3)
         
         self.add_widget(self.boxlogin)
+
+    def on_sendsignupdata(self, dt):
+        
+        #datos POST que se enviaran al script PHP
+        data = {'email':self.signup.email.text,
+                'username':self.signup.username.text,
+                'password':self.signup.password.text
+                }
+        
+        #intentar crear cuenta
+        Request(action='http://www.orgboat.com/netget/ngsignup.php', data=data, callback=self.res_signup)
+        
         
     def res_signup(self, response):
         if response == "OK":

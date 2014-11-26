@@ -1,0 +1,1 @@
+..\kivy\kivy.bat main.py
