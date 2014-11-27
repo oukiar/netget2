@@ -9,7 +9,7 @@ if(isset($_POST["usrID"]))
     $result = mysql_query("select usrNickName, usrID from ngUsers 
                             where usrID in (select friendID from ngRelationships where usrID=$usrID)");
     
-    $jsonData = array('RES':'OK');
+    $jsonData = array();
     
     while($row = mysql_fetch_row($result) )
     {

@@ -22,10 +22,12 @@ if(isset($_POST["email"]))
     
     $result = mysql_query("insert into ngUsers(usrNickName, usrUserName, usrPassword, usrEmail) 
                                         values('$usrNickName', '$usrUserName', '$usrPassword', '$usrEmail')");
+          
+    $usrID = mysql_insert_id();
                                         
     if($result)
     {
-        echo "OK";
+        echo "OK:$usrID:$usrNickName";
         mail($usrEmail, "Welcome to netget network", "Hi $usrNickName.</br>Login data:");
     }
     else

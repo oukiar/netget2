@@ -131,8 +131,8 @@ class Login(BoxLayout):
         
         self.lb_netget = Label(text='Netget', font_size=36)
         
-        self.txt_username = TextBox(text='oukiar', size_hint_y=None, height=40)
-        self.txt_password = TextBox(text='xberry2000', size_hint_y=None, height=40, password=True)
+        self.txt_username = TextBox(text='Username', size_hint_y=None, height=40)
+        self.txt_password = TextBox(text='Password', size_hint_y=None, height=40, password=True)
         
         self.btn_submit = Button(text='Login')
         
@@ -598,7 +598,7 @@ class Netget(FloatLayout):
         
         self.boxlogin.add_widget(Label(text='[color=EEEEEE]Iniciando sesion ...[/color]', markup=True, font_size=32))
         
-        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True))
+        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True, size_hint_y=None, height=200))
         
         self.add_widget(self.boxlogin)
         
@@ -701,11 +701,21 @@ class Netget(FloatLayout):
         self.remove_widget(self.imgloading)
         self.remove_widget(self.boxlogin)
         
-        if response == "OK":
+        if "OK" in response:
             
             print "Signup succesfull"
             
+            res, usrID, usrNickName = response.split(':')
+            
+            self.netgetui.profile.txt_nickname.text = usrNickName
+            
+            self.netgetui.usrID = usrID
+            self.netgetui.usrNickName = usrNickName
+            
+            
             self.add_widget(self.netgetui)
+            fade_in(self.netgetui)
+            
             
         elif response == "EMAIL_EXISTS":
             
