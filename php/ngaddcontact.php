@@ -9,9 +9,11 @@ if(isset($_POST["usrID"]))
     
     $result = mysql_query("insert into ngRelationships values('$usrID', '$friendID')");
     
+    $friendnick = get_value('ngUsers', 'usrNickName', 'usrID', $friendID);
+    
     if($result)
     {
-        echo "CONTACT_ADDED";
+        echo "CONTACT_ADDED:$friendID:$friendnick";
     }
     else
     {

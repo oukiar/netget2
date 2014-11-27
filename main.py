@@ -228,15 +228,17 @@ class ContactMenu(Popup):
     
     def __init__(self, **kwargs):
         
-        super(ContactMenu, self).__init__(title='Contact options', size_hint=(None,None), size=(150,150), **kwargs)
+        super(ContactMenu, self).__init__(title='Contact options', size_hint=(None,None), size=(200,150), **kwargs)
         
         self.content = BoxLayout(orientation='vertical')
         
         self.btn_chat_window = LabelOver(text='Open chat window')
         self.btn_publicshares = LabelOver(text='Open public shares')
+        self.btn_deletecontact = LabelOver(text='Delete contact')
         
         self.content.add_widget( self.btn_chat_window )
         self.content.add_widget( self.btn_publicshares )
+        self.content.add_widget( self.btn_deletecontact )
         
 class ContactItem(BoxLayout):
     def __init__(self, **kwargs):
@@ -468,6 +470,7 @@ class NetgetUI(FloatLayout):
         
         
         self.lst_friends.layout.clear_widgets()
+        self.lst_friends.layout.height = 0
         
         self.contactlistdata = json.loads(response)
         
@@ -538,12 +541,27 @@ class NetgetUI(FloatLayout):
         
     def on_addcontact(self, w):
         
+        self.resultsearch.dismiss()
+        
         Request(action='http://www.orgboat.com/netget/ngaddcontact.php', 
                 data={'usrID':self.usrID, 'friendID':w.parent.contactID}, 
                 callback=self.res_addcontact)
         
     def res_addcontact(self, response):
         print 'Add contact response: ', response
+        
+        
+        if "CONTACT_ADDED" in response:
+            
+            res, friendID, friendNickName = response.split(":")
+        
+            contact = ContactItem(contactID=friendID, profileimage='profile_32x32.png', nickname=friendNickName, friend=True)
+            contact.btn_menu.bind(on_release=self.on_contactmenu)
+            
+            remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + friendID + ".jpg"
+            
+            self.lst_friends.add_widget(contact)
+        
 
 class Netget(FloatLayout):
     def __init__(self, **kwargs):
