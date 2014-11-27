@@ -21,10 +21,13 @@ from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.widget import Widget
 
+from kivy.uix.behaviors import ButtonBehavior
+
 from kivy.graphics import Color, Rectangle
 from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.clock import Clock
+from kivy.properties import StringProperty
 
 #devslib imports
 from widget3D import Image3D, Widget3D
@@ -50,6 +53,10 @@ class Test3D(Widget3D):
         
         self.add_widget(Button(text='Hi', size_hint=(None,None),  ))
 
+
+class ImageButton(ButtonBehavior, Image):
+    pass
+    
 class TextBox(TextInput):
     def __init__(self, **kwargs):
         super(TextBox, self).__init__(**kwargs)
@@ -124,8 +131,8 @@ class Login(BoxLayout):
         
         self.lb_netget = Label(text='Netget', font_size=36)
         
-        self.txt_username = TextBox(text='Username', size_hint_y=None, height=40)
-        self.txt_password = TextBox(text='Password', size_hint_y=None, height=40, password=True)
+        self.txt_username = TextBox(text='oukiar', size_hint_y=None, height=40)
+        self.txt_password = TextBox(text='xberry2000', size_hint_y=None, height=40, password=True)
         
         self.btn_submit = Button(text='Login')
         
@@ -182,12 +189,22 @@ class ScrollBox(ScrollView):
         else:
             self.layout.width += (w.width + len(self.layout.children)*(self.layout.spacing/2))
     
+class ResultSearch(Popup):
+    
+    def __init__(self, **kwargs):
+        
+        super(ResultSearch, self).__init__(title='Search result', size_hint=(None,None), size=(300,500),  **kwargs)
+        
+        self.content = ScrollBox(orientation='vertical')
+        
+    
 class Searcher(AnchorLayout):
     def __init__(self, **kwargs):
         #super(Searcher, self).__init__(pos_z=-280, pos_y=170, pos_x=-50, **kwargs)
         super(Searcher, self).__init__(padding=10, anchor_x='center', anchor_y='top', **kwargs)
         
         self.layout = BoxLayout(size_hint=(None,None), width=300, height=30)
+        
         
         self.img_find = Image(source='navigate.png', size_hint_x=None, width=50, allow_stretch=True)
         self.layout.add_widget(self.img_find)
@@ -199,48 +216,201 @@ class Searcher(AnchorLayout):
         self.btn_search = Button(text='Search', size_hint_x=None, width=70)
         self.layout.add_widget(self.btn_search)
         
+        #SEARCH RESULT
+        #self.lst_result = ScrollBox(orientation='vertical')
+        
+        #self.layout.add_widget(self.lay_search)
+        #self.layout.add_widget(self.lst_result)
+        
         self.add_widget(self.layout)
+        
+class ContactMenu(Popup):
+    
+    def __init__(self, **kwargs):
+        
+        super(ContactMenu, self).__init__(title='Contact options', size_hint=(None,None), size=(150,150), **kwargs)
+        
+        self.content = BoxLayout(orientation='vertical')
+        
+        self.btn_chat_window = LabelOver(text='Open chat window')
+        self.btn_publicshares = LabelOver(text='Open public shares')
+        
+        self.content.add_widget( self.btn_chat_window )
+        self.content.add_widget( self.btn_publicshares )
         
 class ContactItem(BoxLayout):
     def __init__(self, **kwargs):
         
-        super(ContactItem, self).__init__(size_hint_y=None, height=40, spacing=10, **kwargs)
+        self.contactID = kwargs.pop('contactID')
+        self.bfriend = kwargs.pop('friend', False)
+        
+        super(ContactItem, self).__init__(size_hint_y=None, height=30, spacing=10, **kwargs)
     
-        self.img_profile = Image(source=kwargs.get('profileimage'), 
+        self.img_profile = ImageButton(source=kwargs.get('profileimage'), 
                                     allow_stretch=True, 
                                     keep_ratio=False, 
                                     size_hint_x=None, 
-                                    width=40)
+                                    width=30)
                                     
         self.lb_nickcname = Label(text=kwargs.get('nickname'))
+        
+        self.lb_nickcname.bind(size=self.fixLabelText )
         
         self.add_widget(self.img_profile)
         self.add_widget(self.lb_nickcname)
         
+        if self.bfriend == False:
+            self.btn_add = ImageButton(source='add_32x32.png', 
+                                    allow_stretch=True, 
+                                    keep_ratio=False, 
+                                    size_hint_x=None, 
+                                    width=30
+                                    )
+        
+            self.add_widget(self.btn_add)
+            
+        else:
+            self.btn_menu = ImageButton(source='menu_32x32.png', 
+                                    allow_stretch=True, 
+                                    keep_ratio=False, 
+                                    size_hint_x=None, 
+                                    width=30
+                                    )
+        
+            self.add_widget(self.btn_menu)
+                    
+        
+    def fixLabelText(self, w, val):
+        '''
+        Trickly fix for align text to left in a label
+        '''
+        w.text_size = val
         
         
-'''
-class FriendsList(ScrollBox):
+        
+class LabelOver(Button):
     def __init__(self, **kwargs):
         
-        super(FriendsList, self).__init__(size_hint_x=None, width=300, **kwargs)
+        super(LabelOver, self).__init__(markup=True, **kwargs)
     
-        self.layout = BoxLayout(orientation='vertical', size_hint_y=None, spacing=10)
-        self.layout.height = 0
+        #for mouse over event
+        Window.bind(mouse_pos=self.check_over)
+        
+        self.opacity = .7
+        
+    def check_over(self, instance, value):
+        if self.collide_point(value[0], value[1]):
+            self.opacity = 1
+        else:
+            self.opacity = .7
+
+class ProfileMenu(Popup):
     
-        super(FriendsList, self).add_widget(self.layout)
+    def __init__(self, **kwargs):
         
-    def add_widget(self, w, index=0):
+        super(ProfileMenu, self).__init__(title='Profile options', size_hint=(None,None), size=(150,150), **kwargs)
         
-        self.layout.add_widget(w)
-        self.layout.height += (w.height + len(self.layout.children)*(self.layout.spacing/2))
-'''
+        self.content = BoxLayout(orientation='vertical')
+        
+        self.btn_editprofile = LabelOver(text='Edit profile')
+        self.btn_godevices = LabelOver(text='Go to devices')
+        self.btn_logout = LabelOver(text='Logout')
+        
+        self.content.add_widget( self.btn_editprofile )
+        self.content.add_widget( self.btn_godevices )
+        self.content.add_widget( self.btn_logout )
+        
+        
+class ProfileAccess(BoxLayout):
+    def __init__(self, **kwargs):
+                
+        super(ProfileAccess, self).__init__(size_hint=(None,None), size=(300,40), spacing=10, **kwargs)
+        
+        #profile picture snap
+        self.img_profile = ImageButton(source='profile_32x32.png', 
+                                    allow_stretch=True, 
+                                    keep_ratio=False, 
+                                    size_hint_x=None, 
+                                    width=40)
+        self.img_profile.bind(on_press=self.openmenu)
+                                    
+        self.txt_nickname = Label(markup=True, font_size=28)
+        self.txt_nickname.bind(size=self.fixLabelText )
+        
+        self.add_widget(self.img_profile)
+        self.add_widget(self.txt_nickname)
+        
+        self.menu = ProfileMenu()
+        self.menu.btn_editprofile.bind(on_release=self.on_editprofile)
+        
+        self.btn_save = Button(text='Save', size_hint_x=None, width=50, on_press=self.save)
+        
+        
+    def save(self, w):
+        
+        Request(action='http://www.orgboat.com/netget/ngsaveprofile.php', 
+                data={'usrID':self.usrID, 'newnickname':self.txt_nickname.text}, 
+                callback=self.res_save)
+                
+        self.remove_widget(self.btn_save)
+        
+        self.loading = Loading(source='gear-icon_128x128.png')
+        
+        self.add_widget( self.loading )
+        
+    def res_save(self, response):
+        print "Save response: ", response
+        
+        self.remove_widget(self.loading)
+        
+        if response == "PROFILE_SAVED":
+            
+            nickname = self.txt_nickname.text
+            self.remove_widget(self.txt_nickname)
+            self.txt_nickname = Label(text=nickname, markup=True, font_size=28)
+            self.txt_nickname.bind(size=self.fixLabelText )
+            self.add_widget(self.txt_nickname)
+        
+        
+    def fixLabelText(self, w, val):
+        '''
+        Trickly fix for align text to left in a label
+        '''
+        w.text_size = val
+        
+    def openmenu(self, w):
+        print 'Editing profile'
+        self.menu.open()
+        self.menu.x = self.x
+        self.menu.y = self.y - self.menu.height
+        
+        
+    def on_editprofile(self, w):
+        nickname = self.txt_nickname.text
+        self.remove_widget(self.txt_nickname)
+        
+        self.txt_nickname = TextInput(text=nickname, font_size=28)
+        self.add_widget(self.txt_nickname)
+        
+        #button for save
+        self.add_widget(self.btn_save)
+        
+        self.menu.dismiss()
+        
+        self.txt_nickname.focus = True
+        
+        
+        
 
 class NetgetUI(FloatLayout):
     '''
     Interfaz de usuario principal de netget, aqui es donde los usuarios interactuan
     en netget
     '''
+    
+    usrID = StringProperty("-1")  # -1 means logout
+    usrNickName = StringProperty()
+    
     def __init__(self, **kwargs):
         
         super(NetgetUI, self).__init__(**kwargs)
@@ -250,17 +420,84 @@ class NetgetUI(FloatLayout):
         self.add_widget(self.searcher)
         self.searcher.btn_search.bind(on_release=self.on_search)
         
-        #SEARCH RESULT
+        self.left_box = BoxLayout(orientation='vertical', padding=20, size_hint_x=None, width=200)
+        
+        #NAT
+        self.left_box.add_widget(Label(text='Neurons Art & Technology', size_hint_y=None, height=40))
+        
+        #PROFILE
+        self.profile = ProfileAccess()
+        
+        
+        self.profile.menu.btn_godevices.bind(on_release=self.on_godevices)
+        
+        self.left_box.add_widget(self.profile)
+        
+        
         
         #CONTACT LIST
-        self.lst_friends = ScrollBox(orientation='vertical', size_hint_x=None, width=300)
-        self.add_widget(self.lst_friends)
+        self.lst_friends = ScrollBox(orientation='vertical')
+        self.left_box.add_widget(self.lst_friends)
         
-        #iniciar obtencion de contactos
-        Clock.schedule_once(self.get_contacts, 1)
+        
+        #
+        self.add_widget(self.left_box)
+                
+        #RESULT SEARCH
+        self.resultsearch = ResultSearch()
+        
+        #contact menu
+        self.contactmenu = ContactMenu()
+        
+    def on_godevices(self, w):
+        print 'Going to manage my devices'
+        
+        
+    def on_usrID(self, w, val):
+        self.profile.usrID = val
         
     def get_contacts(self, dt):
         print 'Obteniendo contactos'
+        
+        Request(action='http://www.orgboat.com/netget/nglistcontacts.php', 
+                data={'usrID':self.usrID}, 
+                callback=self.res_get_contacts)
+                
+    def res_get_contacts(self, response):
+        print 'Contacts list: ', response
+        
+        
+        self.lst_friends.layout.clear_widgets()
+        
+        self.contactlistdata = json.loads(response)
+        
+        Clock.schedule_once(self.fill_contact_list, 0)
+        
+    def fill_contact_list(self, dt):
+        
+        for nick in self.contactlistdata:
+            
+            usrID = self.contactlistdata[nick]
+            
+            print "Nick: %s, ID: %s" % (nick, usrID)
+            
+            contact = ContactItem(contactID=usrID, profileimage='profile_32x32.png', nickname=nick, friend=True)
+            contact.btn_menu.bind(on_release=self.on_contactmenu)
+            
+            remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + usrID + ".jpg"
+            
+            self.lst_friends.add_widget(contact)
+            
+        fade_in(self.lst_friends)
+        
+        
+    def on_contactmenu(self, w):
+        
+        self.contactmenu.open()
+        print w.pos
+        
+        #self.contactmenu.x = w.x
+        #self.contactmenu.y = w.y - self.contactmenu.height
         
     def on_search(self, w):
         print "Searching: ", self.searcher.txt_search.text
@@ -272,49 +509,86 @@ class NetgetUI(FloatLayout):
     def res_search(self, response):
         print 'Search response: ', response
         
-        resdict = json.loads(response)
+        self.resultsearch.content.layout.clear_widgets()
+        self.resultsearch.content.layout.height = 0
         
-        for nick in resdict:
-            usrID = resdict[nick]
+        self.resultsearchdata = json.loads(response)
+        
+        Clock.schedule_once(self.showresultsearch)
+                
+            
+    def showresultsearch(self, dt):
+        
+        for nick in self.resultsearchdata:
+            
+            usrID = self.resultsearchdata[nick]
+            
             print "Nick: %s, ID: %s" % (nick, usrID)
             
-            contact = ContactItem(profileimage='profile_32x32.png', nickname=nick)
+            contact = ContactItem(contactID=usrID, profileimage='profile_32x32.png', nickname=nick)
+            contact.btn_add.bind(on_release=self.on_addcontact)
             
             remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + usrID + ".jpg"
             
-            self.lst_friends.add_widget(contact)
+            self.resultsearch.content.add_widget(contact)
+            
+    
+        self.resultsearch.open()
+        
+        
+    def on_addcontact(self, w):
+        
+        Request(action='http://www.orgboat.com/netget/ngaddcontact.php', 
+                data={'usrID':self.usrID, 'friendID':w.parent.contactID}, 
+                callback=self.res_addcontact)
+        
+    def res_addcontact(self, response):
+        print 'Add contact response: ', response
 
 class Netget(FloatLayout):
     def __init__(self, **kwargs):
         
         super(Netget, self).__init__(**kwargs)
         
-        #de momento el background un solo color 
+        #de momento el background es de un solo color 
         #self.img_background = Image(source='background.jpg')
         #self.add_widget(self.img_background)
-        
-        #fondo
-        with self.canvas.before:
-            Color(.1, .1, .1, 1)  # colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=Window.size)
-
         
         self.login = Login()
         self.login.btn_submit.bind(on_press=self.on_login)
         self.login.lb_superiormenu.bind(on_ref_press=self.on_headerloginpress)
         
         self.add_widget(self.login)
+        
+        #self.add_widget(Searcher() )
+        self.netgetui = NetgetUI()
+        self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
 
         '''
         self.test3D = Test3D()
         self.add_widget(self.test3D)
         '''
         
+    def on_logout(self, w):
+        print 'Loging out'
+        
+        self.netgetui.profile.menu.dismiss()
+        self.remove_widget(self.netgetui)
+        
+        self.add_widget(self.login)
+        fade_in(self.login)
+        
+    def on_size(self, instance, val):
+        if self.canvas == None:
+            return
+        
+        with self.canvas.before:
+            Color(.1, .1, .1, 1)  # colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=Window.size)
+        
+        
     def on_login(self, w):
         self.remove_widget(self.login)
-        
-        #enviar peticion de login al servidor principal
-        
         
         #poner icono de loading
         self.imgloading = Loading(source='loading_32x32.png')
@@ -349,12 +623,20 @@ class Netget(FloatLayout):
         self.remove_widget(self.imgloading)
         self.remove_widget(self.boxlogin)
         
-        if response == 'OK_LOGIN':
+        if 'OK_LOGIN' in response:
             print "Login succesfull"
             
-            self.netgetui = NetgetUI()
+            res, usrID, usrNickName = response.split(':')
+            
+            self.netgetui.profile.txt_nickname.text = usrNickName
+            
+            self.netgetui.usrID = usrID
+            self.netgetui.usrNickName = usrNickName
+            
+            Clock.schedule_once(self.netgetui.get_contacts, 1)
             
             self.add_widget(self.netgetui)
+            fade_in(self.netgetui)
             
         elif response == 'PASSDIFF_LOGIN':
             
@@ -395,7 +677,7 @@ class Netget(FloatLayout):
         
         self.boxlogin.add_widget(Label(text='[color=EEEE]Signing up in the netget network[/color]', font_size=32, markup=True))
 
-        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True, size_hint_y=None, height=200))
+        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancel subscription[/color]', markup=True, size_hint_y=None, height=200))
         
         #set the event for create the cancel option ... 
         Clock.schedule_once(self.on_sendsignupdata, 3)
@@ -423,7 +705,6 @@ class Netget(FloatLayout):
             
             print "Signup succesfull"
             
-            self.netgetui = NetgetUI()
             self.add_widget(self.netgetui)
             
         elif response == "EMAIL_EXISTS":

@@ -10,10 +10,12 @@ if(isset($_POST["username"]))
     if(exists("ngUsers", "usrUserName", $usrUserName) )
     {
         $password = get_value('ngUsers', 'usrPassword', 'usrUserName', $usrUserName);
+        $usrID = get_value('ngUsers', 'usrID', 'usrUserName', $usrUserName);
+        $usrNickName = get_value('ngUsers', 'usrNickName', 'usrUserName', $usrUserName);
         
         if($usrPassword == $password)
         {
-            echo "OK_LOGIN";
+            echo "OK_LOGIN:$usrID:$usrNickName";
         }
         else
         {
