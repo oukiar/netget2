@@ -559,9 +559,9 @@ class Netget(FloatLayout):
         
         super(Netget, self).__init__(**kwargs)
         
-        #de momento el background es de un solo color 
-        #self.img_background = Image(source='background.jpg')
-        #self.add_widget(self.img_background)
+        #netget map icon
+        self.img_netgetmap = Image(source='network_64x64.png', size_hint=(None, None), size=(64,64), allow_stretch=True)
+        self.add_widget(self.img_netgetmap)
         
         self.login = Login()
         self.login.btn_submit.bind(on_press=self.on_login)
