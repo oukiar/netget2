@@ -18,6 +18,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
+from kivy.uix.checkbox import CheckBox
 from kivy.uix.image import Image
 from kivy.uix.widget import Widget
 
@@ -31,11 +32,19 @@ from kivy.properties import StringProperty
 
 #devslib imports
 from widget3D import Image3D, Widget3D
-from utils import Request, alert, MessageBoxTime, fade_in
+from utils import Request, alert, MessageBoxTime, fade_in, LabelItem
 from scrollbox import ScrollBox
 
 #rest of libraries
 import json
+import os
+
+'''
+About the cryptography ... Why sodium?
+
+http://labs.opendns.com/2013/03/06/announcing-sodium-a-new-cryptographic-library/
+
+'''
 
 class Test3D(Widget3D):
     def __init__(self, **kwargs):
@@ -68,7 +77,7 @@ class TextBox(TextInput):
         #if TAB was pressed
         if substring == '\t':
             #set the focus to the next children
-            #self.parent.children[self.parent.children.index(self)-1].focus = True
+            self.parent.children[self.parent.children.index(self)-1].focus = True
             return
                 
         super(TextBox, self).insert_text(substring)
@@ -135,6 +144,13 @@ class Login(BoxLayout):
         self.txt_username = TextBox(text='Username', size_hint_y=None, height=40)
         self.txt_password = TextBox(text='Password', size_hint_y=None, height=40, password=True)
         
+        
+        self.cbx_remmemberme = LabelItem(caption='Remmember me', 
+                                            texthalign='left',
+                                            itemtype=CheckBox, 
+                                            widgetposition='left', 
+                                            item_kwargs={'size_hint_x':None, 'width':30, 'active':True})
+        
         self.btn_submit = Button(text='Login')
         
         self.message = Label(markup=True)
@@ -145,6 +161,7 @@ class Login(BoxLayout):
         self.add_widget(self.txt_password)
         self.add_widget(self.btn_submit)
         self.add_widget(self.message)
+        self.add_widget(self.cbx_remmemberme)
         
       
 class CenterLog(BoxLayout):
@@ -180,7 +197,7 @@ class Searcher(AnchorLayout):
         self.layout = BoxLayout(size_hint=(None,None), width=300, height=30)
         
         
-        self.img_find = Image(source='navigate.png', size_hint_x=None, width=50, allow_stretch=True)
+        self.img_find = Image(source='find_48x48.png', size_hint_x=None, width=50, allow_stretch=True)
         self.layout.add_widget(self.img_find)
         
         self.txt_search = TextBox(text='Keywords to search ...')
@@ -556,6 +573,8 @@ class Netget(FloatLayout):
         self.netgetui = NetgetUI()
         self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
 
+        self.home = 'home'
+
         '''
         self.test3D = Test3D()
         self.add_widget(self.test3D)
@@ -575,8 +594,8 @@ class Netget(FloatLayout):
             return
         
         with self.canvas.before:
-            Color(.1, .1, .1, 1)  # colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=Window.size)
+            Color(.4, .4, .4, 1)  # colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=Window.size, source='Venecia.jpg')
         
         
     def on_login(self, w):
@@ -590,7 +609,7 @@ class Netget(FloatLayout):
         
         self.boxlogin.add_widget(Label(text='[color=EEEEEE]Iniciando sesion ...[/color]', markup=True, font_size=32))
         
-        self.boxlogin.add_widget(Label(text='[color=EE0000]Cancelar inicio de sesion[/color]', markup=True, size_hint_y=None, height=200))
+        self.boxlogin.add_widget(Label(text='[color=FFFFFF]Cancelar inicio de sesion[/color]', markup=True, size_hint_y=None, height=200))
         
         self.add_widget(self.boxlogin)
         
@@ -605,7 +624,7 @@ class Netget(FloatLayout):
                 'password':self.login.txt_password.text
                 }
         
-        #intentar crear cuenta
+        #intentar hacer login
         Request(action='http://www.orgboat.com/netget/nglogin.php', data=data, callback=self.res_login)
         
     def res_login(self, response):
@@ -629,6 +648,33 @@ class Netget(FloatLayout):
             
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
+            
+            self.homedir = os.path.join(self.home, self.netgetui.usrID)
+            self.profiledir = os.path.join(self.homedir, 'profile')
+            
+            #create home?
+            if not os.path.exists(self.home):
+                os.mkdir(self.home )
+                
+            #create homedir?
+            if not os.path.exists(self.homedir):
+                os.mkdir(self.homedir )
+                
+            #create profiledir?
+            if not os.path.exists(self.profiledir):
+                os.mkdir(self.profiledir )
+            
+            #save this session?
+            if self.login.cbx_rememberme:
+                #save session data
+                pass
+                    
+            #exist profile picture?
+            if os.path.exists(os.path.join(self.profiledir, 'profile.jpg')):
+                #does not exist snap?
+                if not os.path.exists(os.path.join(self.profiledir, 'profile_snap.jpg')):
+                    #resize and save profile picture
+                    pass
             
         elif response == 'PASSDIFF_LOGIN':
             
@@ -707,6 +753,9 @@ class Netget(FloatLayout):
             
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
+            
+            #ask if this profile must be saved
+            
             
             
         elif response == "EMAIL_EXISTS":
