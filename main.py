@@ -70,6 +70,8 @@ class ImageButton(ButtonBehavior, Image):
 class TextBox(TextInput):
     def __init__(self, **kwargs):
         super(TextBox, self).__init__(**kwargs)
+        
+        self.bind(focus=self.on_focus)
     
     def insert_text(self, substring, from_undo=False):
         #print substring
@@ -83,7 +85,7 @@ class TextBox(TextInput):
         super(TextBox, self).insert_text(substring)
         
     def on_focus(self, w, val):
-        super(TextBox, self).on_focus(w, val)
+        #super(TextBox, self).on_focus(w, val)
         
         if val == True:
             Clock.schedule_once(self.select_alltext, 0)
@@ -553,15 +555,24 @@ class NetgetUI(FloatLayout):
             
             self.lst_friends.add_widget(contact)
         
+class NetgetMap(AnchorLayout):
+    def __init__(self, **kwargs):
+        
+        super(NetgetMap, self).__init__(**kwargs)
+        
+        
+        self.img_netgetmap = Image(source='network_64x64.png', size_hint=(None, None), size=(64,64), allow_stretch=True)
+        self.add_widget(self.img_netgetmap)
+    
 
 class Netget(FloatLayout):
     def __init__(self, **kwargs):
         
         super(Netget, self).__init__(**kwargs)
         
-        #netget map icon
-        self.img_netgetmap = Image(source='network_64x64.png', size_hint=(None, None), size=(64,64), allow_stretch=True)
-        self.add_widget(self.img_netgetmap)
+        #netget map widget
+        self.netgetmap = NetgetMap(anchor_x='right', anchor_y='top')
+        self.add_widget(self.netgetmap)
         
         self.login = Login()
         self.login.btn_submit.bind(on_press=self.on_login)
