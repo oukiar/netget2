@@ -85,7 +85,7 @@ class TextBox(TextInput):
         super(TextBox, self).insert_text(substring)
         
     def on_focus(self, w, val):
-        #super(TextBox, self).on_focus(w, val)
+        super(TextBox, self).on_focus(w, val)
         
         if val == True:
             Clock.schedule_once(self.select_alltext, 0)
