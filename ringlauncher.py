@@ -12,10 +12,11 @@ from widget3D import Image3D, Edit3D
 class Launcher(Image3D):
     def __init__(self, **kwargs):
         super(Launcher, self).__init__(source='docklauncher512.png',
-                                       #size=(200,200),
-                                       pos_x=-550,
-                                       pos_y=-280,
-                                        #pos_z=-500, 
+                                        #size_hint=(None,None),
+                                       #size=(100,100),
+                                       pos_x=-1900,
+                                       pos_y=-1100,
+                                        pos_z=-1400, 
                                         #scale_x=.5, 
                                         #scale_y=.5, 
                                         **kwargs)
@@ -24,11 +25,11 @@ class Launcher(Image3D):
         
         print 'Launcher image size: ', self.size
             
-            #for mouse over event
+        #for mouse over event
         Window.bind(mouse_pos=self.mouse_over)
     
-        self.animin = Animation(scale3D=(.3,.3, 1), duration=1)
-        self.animax = Animation(scale3D=(1,1, 1), duration=1)
+        self.animin = Animation(scale3D=(1,1, 1), duration=1)
+        self.animax = Animation(scale3D=(3,3, 1), duration=1)
         
         self.animin.bind(on_complete=self.on_minimized)
         self.animax.bind(on_complete=self.on_maximized)
@@ -42,8 +43,6 @@ class Launcher(Image3D):
             if self.state == 'iddle_min':
                 self.state = 'maximising'
                 self.animax.start(self)
-            #elif self.state == 'iddle_max':
-            #    animin.start(self)
         else:
             if self.state == 'iddle_max':
                 self.state = 'minimising'
