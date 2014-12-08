@@ -15,6 +15,12 @@ if(isset($_POST["username"]))
         
         if($usrPassword == $password)
         {
+            //save the device ID
+            $devID = $_POST["devID"];
+            $deviceName = $_POST["deviceName"];
+            
+            
+            
             echo "OK_LOGIN:$usrID:$usrNickName";
         }
         else

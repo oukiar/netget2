@@ -38,6 +38,7 @@ from scrollbox import ScrollBox
 #rest of libraries
 import json
 import os
+import socket #only for the hostname
 
 '''
 About the cryptography ... Why sodium?
@@ -71,7 +72,7 @@ class TextBox(TextInput):
     def __init__(self, **kwargs):
         super(TextBox, self).__init__(**kwargs)
         
-        self.bind(focus=self.on_focus)
+        #self.bind(focus=self.on_focus)
     
     def insert_text(self, substring, from_undo=False):
         #print substring
@@ -85,7 +86,9 @@ class TextBox(TextInput):
         super(TextBox, self).insert_text(substring)
         
     def on_focus(self, w, val):
-        #super(TextBox, self).on_focus(w, val)
+        #bad fix, but works
+        #if hasattr(super(TextBox, self), 'on_focus'):
+        super(TextBox, self).on_focus(w, val)
         
         if val == True:
             Clock.schedule_once(self.select_alltext, 0)
@@ -144,7 +147,7 @@ class Login(BoxLayout):
         self.lb_netget = Label(text='Netget', font_size=36)
         
         self.txt_username = TextBox(text='Username', size_hint_y=None, height=40)
-        self.txt_password = TextBox(text='Password', size_hint_y=None, height=40, password=True)
+        self.txt_password = TextBox(text='Password', size_hint_y=None, height=40, password=True, multiline=False)
         
         
         self.cbx_remmemberme = LabelItem(caption='Remmember me', 
@@ -164,6 +167,13 @@ class Login(BoxLayout):
         self.add_widget(self.btn_submit)
         self.add_widget(self.message)
         self.add_widget(self.cbx_remmemberme)
+        
+        
+        self.txt_password.bind(on_text_validate=self.enterpassword)
+        
+    def enterpassword(self, w):
+        print 'Loging from password enter'
+        self.btn_submit.dispatch('on_press')
         
       
 class CenterLog(BoxLayout):
@@ -395,6 +405,13 @@ class ProfileAccess(BoxLayout):
         self.txt_nickname.focus = True
         
         
+    
+class NetgetApps(FloatLayout):
+    def __init__(self, **kwargs):
+        
+        super(NetgetApps, self).__init__(**kwargs)
+        
+        self.add_widget(Image3D(source='bubble.png', pos_z=-500) )
         
 
 class NetgetUI(FloatLayout):
@@ -458,6 +475,11 @@ class NetgetUI(FloatLayout):
                 data={'usrID':self.usrID}, 
                 callback=self.res_get_contacts)
                 
+                
+        #NETGET APPS
+        self.netgetapps = NetgetApps()
+        self.add_widget(self.netgetapps)
+                
     def res_get_contacts(self, response):
         print 'Contacts list: ', response
         
@@ -468,6 +490,7 @@ class NetgetUI(FloatLayout):
         self.contactlistdata = json.loads(response)
         
         Clock.schedule_once(self.fill_contact_list, 0)
+        
         
     def fill_contact_list(self, dt):
         
@@ -563,7 +586,7 @@ class NetgetMap(AnchorLayout):
         
         self.img_netgetmap = Image(source='network_64x64.png', size_hint=(None, None), size=(64,64), allow_stretch=True)
         self.add_widget(self.img_netgetmap)
-    
+
 
 class Netget(FloatLayout):
     def __init__(self, **kwargs):
@@ -580,16 +603,30 @@ class Netget(FloatLayout):
         
         self.add_widget(self.login)
         
-        #self.add_widget(Searcher() )
         self.netgetui = NetgetUI()
         self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
 
+        #HOME DIRECTORY
         self.home = 'home'
 
-        '''
+        #ID OF THIS DEVICE
+        self.load_devID()
+        
+        #FOCUS THE USERNAME TEXTBOX
+        self.login.txt_username.focus = True
+
+        ''' TESTING FOR FUTURE CORRECTIONS ...
         self.test3D = Test3D()
         self.add_widget(self.test3D)
         '''
+        
+    def load_devID(self):
+        try:
+            with open('devID') as f:
+                self.devID = f.readline()                
+                
+        except:
+            self.devID = '-1'
         
     def on_logout(self, w):
         print 'Loging out'
@@ -629,10 +666,14 @@ class Netget(FloatLayout):
         
     def on_sendlogindata(self, dt):
         
+        
+        
         #datos POST que se enviaran al script PHP
         data = {
                 'username':self.login.txt_username.text,
-                'password':self.login.txt_password.text
+                'password':self.login.txt_password.text, 
+                'devID':self.devID,
+                'deviceName':socket.gethostname()
                 }
         
         #intentar hacer login
@@ -686,6 +727,7 @@ class Netget(FloatLayout):
                 if not os.path.exists(os.path.join(self.profiledir, 'profile_snap.jpg')):
                     #resize and save profile picture
                     pass
+                    
             
         elif response == 'PASSDIFF_LOGIN':
             
