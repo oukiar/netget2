@@ -31,7 +31,7 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty
 
 #devslib imports
-from widget3D import Image3D, Widget3D
+from widget3D import Image3D, Widget3D, Edit3D
 from utils import Request, alert, MessageBoxTime, fade_in, LabelItem
 from scrollbox import ScrollBox
 
