@@ -27,8 +27,8 @@ class Launcher(Image3D):
             #for mouse over event
         Window.bind(mouse_pos=self.mouse_over)
     
-        self.animin = Animation(scale3D=(.3,.3, 1), duration=3)
-        self.animax = Animation(scale3D=(1,1, 1), duration=3)
+        self.animin = Animation(scale3D=(.3,.3, 1), duration=1)
+        self.animax = Animation(scale3D=(1,1, 1), duration=1)
         
         self.animin.bind(on_complete=self.on_minimized)
         self.animax.bind(on_complete=self.on_maximized)
