@@ -30,6 +30,9 @@ from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.properties import StringProperty
 
+#local netget imports
+from ringlauncher import Launcher
+
 #devslib imports
 from widget3D import Image3D, Widget3D, Edit3D
 from utils import Request, alert, MessageBoxTime, fade_in, LabelItem
@@ -605,6 +608,10 @@ class Netget(FloatLayout):
         
         self.netgetui = NetgetUI()
         self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
+
+        #launcher
+        self.launcher = Launcher()
+        self.add_widget(self.launcher)
 
         #HOME DIRECTORY
         self.home = 'home'
