@@ -100,17 +100,6 @@ class TextBox(TextInput):
         self.select_all()
 
 
-class Loading(Image3D):
-    def __init__(self, **kwargs):
-        super(Loading, self).__init__(size_hint=(None, None), size=(2,2), **kwargs)
-        
-        self.reanimate()
-        
-    def reanimate(self, anim=None, w=None):
-        self.rotate_z = 0
-        self.anim = Animation(rotate_z=360, duration=1)
-        self.anim.bind(on_complete=self.reanimate)
-        self.anim.start(self)
         
 class SignUp(Popup):
     def __init__(self, **kwargs):
@@ -406,16 +395,7 @@ class ProfileAccess(BoxLayout):
         self.menu.dismiss()
         
         self.txt_nickname.focus = True
-        
-        
-    
-class NetgetApps(FloatLayout):
-    def __init__(self, **kwargs):
-        
-        super(NetgetApps, self).__init__(**kwargs)
-        
-        self.add_widget(Image3D(source='bubble.png', pos_z=-500) )
-        
+            
 
 class NetgetUI(FloatLayout):
     '''
@@ -478,10 +458,11 @@ class NetgetUI(FloatLayout):
                 data={'usrID':self.usrID}, 
                 callback=self.res_get_contacts)
                 
-                
+        '''
         #NETGET APPS
         self.netgetapps = NetgetApps()
         self.add_widget(self.netgetapps)
+        '''
                 
     def res_get_contacts(self, response):
         print 'Contacts list: ', response
@@ -710,6 +691,7 @@ class Netget(FloatLayout):
             
             self.homedir = os.path.join(self.home, self.netgetui.usrID)
             self.profiledir = os.path.join(self.homedir, 'profile')
+            self.appsdir = os.path.join(self.homedir, 'apps')
             
             #create home?
             if not os.path.exists(self.home):
@@ -723,8 +705,12 @@ class Netget(FloatLayout):
             if not os.path.exists(self.profiledir):
                 os.mkdir(self.profiledir )
             
+            #create appsdir?
+            if not os.path.exists(self.appsdir):
+                os.mkdir(self.appsdir )
+                
             #save this session?
-            if self.login.cbx_rememberme:
+            if self.login.cbx_remmemberme:
                 #save session data
                 pass
                     
