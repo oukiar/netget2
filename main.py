@@ -34,9 +34,9 @@ from kivy.properties import StringProperty
 from ringlauncher import Launcher
 
 #devslib imports
-from widget3D import Image3D, Widget3D, Edit3D
-from utils import Request, alert, MessageBoxTime, fade_in, LabelItem
-from scrollbox import ScrollBox
+from devslib.widget3D import Image3D, Widget3D, Edit3D, Loading
+from devslib.utils import Request, alert, MessageBoxTime, fade_in, LabelItem
+from devslib.scrollbox import ScrollBox
 
 #rest of libraries
 import json

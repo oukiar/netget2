@@ -16,6 +16,9 @@ class Launcher(Image):
                                         #scale_x=.5, 
                                         #scale_y=.5, 
                                         **kwargs)
+                                        
+        self.selected_scale = 1.5
+        self.unselected_scale = .2
         
         print 'Launcher image size: ', self.size
             
@@ -42,6 +45,20 @@ class Launcher(Image):
                 self.state = 'minimising'
                 self.animin.start(self)
 
+    def add_widget(self, w, index=0):
+        #w.size = self.size
+        super(Launcher, self).add_widget(w, index)
+        
+        #calcular posicion circular
+        
+
+    def on_size(self, w, val):
+        for i in self.children:
+            print val
+            i.size = (val[0]*self.unselected_scale, val[1]*self.unselected_scale );
+            print self.children.index(i)*.2
+    
+
     def on_minimized(self, anim, w):
         self.state = 'iddle_min'
 
@@ -52,6 +69,8 @@ class Launcher(Image):
 if __name__ == '__main__':
     from kivy.base import runTouchApp
     
+    launcher = Launcher()
+    launcher.add_widget(Image(size_hint=(None,None), size=(10,10), source='shotcamfront.png', allow_stretch=True, keep_ratio=False))
     
-    runTouchApp( Launcher() )
+    runTouchApp( launcher )
 
