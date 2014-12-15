@@ -638,7 +638,7 @@ class Netget(FloatLayout):
         self.remove_widget(self.login)
         
         #poner icono de loading
-        self.imgloading = Loading(source='loading_32x32.png')
+        self.imgloading = Loading(source='loading.png')
         self.add_widget(self.imgloading)
         
         self.boxlogin = CenterLog()
