@@ -821,7 +821,7 @@ class Netget(FloatLayout):
             
             self.signup = SignUp()
             self.signup.open()
-            self.signup.bing(on_dismiss=self.login.open)
+            self.signup.bind(on_dismiss=self.login.open)
             self.signup.btn_submit.bind(on_press=self.on_signup)
             
     def on_signup(self, w):
