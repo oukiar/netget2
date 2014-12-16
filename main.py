@@ -496,14 +496,13 @@ class NetgetUI(FloatLayout):
     def res_get_contacts(self, response):
         print 'Contacts list: ', response
         
-        
-        self.lst_friends.layout.clear_widgets()
-        self.lst_friends.layout.height = 0
-        
         contactlistdata = json.loads(response)
         
         #changed the friends online data?
         if self.contactlistdata != contactlistdata:
+            
+            self.lst_friends.layout.clear_widgets()
+            self.lst_friends.layout.height = 0
             
             self.contactlistdata = contactlistdata
             
