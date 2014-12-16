@@ -15,6 +15,7 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
+from kivy.uix.bubble import Bubble
 
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
@@ -415,6 +416,31 @@ class ProfileAccess(BoxLayout):
         self.txt_nickname.focus = True
             
 
+class Chat(Bubble):
+    
+    def __init__(self, **kwargs):
+        
+        super(Chat, self).__init__(size_hint=(None, None), size=(300,400), pos=(300,100), **kwargs)
+        
+        self.layout = BoxLayout(orientation='vertical', padding=10)
+        
+        self.messages = ScrollBox()
+        self.layout.add_widget(self.messages)
+        
+        #self.lay_message = BoxLayout(size_hint_y=None, height=60)
+        
+        self.txt_message = TextInput(text='Write your message here', size_hint_y=None, height=60)
+        self.btn_send = Button(text='Send', size_hint_y=None, height=30)
+        
+        self.layout.add_widget( self.txt_message )
+        self.layout.add_widget( self.btn_send )
+        
+        #self.layout.add_widget(self.lay_message)
+        
+        
+        self.add_widget(self.layout)
+        
+
 class NetgetUI(FloatLayout):
     '''
     Interfaz de usuario principal de netget, aqui es donde los usuarios interactuan
@@ -461,6 +487,10 @@ class NetgetUI(FloatLayout):
         
         #
         self.add_widget(self.left_box)
+        
+        
+        #CHAT
+        self.chat = Chat()
                 
         #RESULT SEARCH
         self.resultsearch = ResultSearch()
@@ -537,6 +567,7 @@ class NetgetUI(FloatLayout):
             
             contact = ContactItem(contactID=usrID, profileimage='profile_32x32.png', nickname=nick, friend=True)
             contact.btn_menu.bind(on_release=self.on_contactmenu)
+            contact.btn_chat.bind(on_release=self.on_openchat)
             
             remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + usrID + ".jpg"
             
@@ -552,6 +583,11 @@ class NetgetUI(FloatLayout):
         
         #self.contactmenu.x = w.x
         #self.contactmenu.y = w.y - self.contactmenu.height
+        
+    def on_openchat(self, w):
+        print "Iniciando chat con el contacto ", w.parent.contactID
+        self.add_widget(self.chat)
+        
         
     def on_search(self, w):
         print "Searching: ", self.searcher.txt_search.text
