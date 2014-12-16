@@ -416,6 +416,8 @@ class NetgetUI(FloatLayout):
     def __init__(self, **kwargs):
         
         super(NetgetUI, self).__init__(**kwargs)
+        
+        self.devID = kwargs.get('devID', -1)
     
         #SEARCHER
         self.searcher = Searcher()
@@ -441,6 +443,8 @@ class NetgetUI(FloatLayout):
         self.lst_friends = ScrollBox(orientation='vertical')
         self.left_box.add_widget(self.lst_friends)
         
+        self.contactlistdata = []
+        
         
         #
         self.add_widget(self.left_box)
@@ -450,6 +454,22 @@ class NetgetUI(FloatLayout):
         
         #contact menu
         self.contactmenu = ContactMenu()
+        
+        #PING ALIVE
+        Clock.schedule_interval(self.ping_alive, 10)
+        
+    def ping_alive(self, df):
+        
+        if self.devID == -1:
+            return
+        
+        Request(action='http://www.orgboat.com/netget/ngpingalive.php', 
+                data={'devID':self.devID, 'usrID':self.usrID}, 
+                callback=self.res_ping_alive)
+        
+    def res_ping_alive(self, response):
+        if response == "PINGACK":
+            print "Online session revalided"
         
     def on_godevices(self, w):
         print 'Going to manage my devices'
@@ -478,12 +498,20 @@ class NetgetUI(FloatLayout):
         self.lst_friends.layout.clear_widgets()
         self.lst_friends.layout.height = 0
         
-        self.contactlistdata = json.loads(response)
+        contactlistdata = json.loads(response)
         
-        Clock.schedule_once(self.fill_contact_list, 0)
+        #changed the friends online data?
+        if self.contactlistdata != contactlistdata:
+            
+            self.contactlistdata = contactlistdata
+            
+            #refill the contacts list
+            Clock.schedule_once(self.fill_contact_list, 0)
         
         
     def fill_contact_list(self, dt):
+        
+        self.lst_friends.layout.clear_widgets()
         
         for nick in self.contactlistdata:
             
@@ -499,6 +527,9 @@ class NetgetUI(FloatLayout):
             self.lst_friends.add_widget(contact)
             
         fade_in(self.lst_friends)
+        
+        #pool for contactlist refreshs each 20 seconds
+        Clock.schedule_once(self.get_contacts, 20)
         
         
     def on_contactmenu(self, w):
@@ -712,6 +743,7 @@ class Netget(FloatLayout):
             
             self.netgetui.usrID = usrID
             self.netgetui.usrNickName = usrNickName
+            self.netgetui.devID = self.devID
             
             Clock.schedule_once(self.netgetui.get_contacts, 1)
             
@@ -770,6 +802,7 @@ class Netget(FloatLayout):
             
             self.signup = SignUp()
             self.signup.open()
+            self.signup.bing(on_dismiss=self.login.open)
             self.signup.btn_submit.bind(on_press=self.on_signup)
             
     def on_signup(self, w):
@@ -785,7 +818,7 @@ class Netget(FloatLayout):
         #----------
         
         #poner icono de loading
-        self.imgloading = Loading(source='loading_32x32.png')
+        self.imgloading = Loading(source='loading.png')
         self.add_widget(self.imgloading)
         
         self.boxlogin = CenterLog()
