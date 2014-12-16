@@ -845,14 +845,15 @@ class Netget(FloatLayout):
             self.signup.message.text = "[color=FF0000]The user already exists[/color]"
             self.signup.open()
             
-    def incoming(self, data_pack, addr):
-        print data_pack, addr
+    def incoming(self, data_json, addr):
+        
+        data_dict = json.loads(data_json)
                 
-        if data_pack[0] == 'init_holepunch':
+        if data_dict["msg"] == 'init_holepunch':
             
             print "Initiating communication with ", addr
             
-        elif data_pack[0] == 'ping':
+        elif data_dict["msg"] == 'ping':
             tosend = json.dumps({'msg':'ping_ack', 'data':None})
             self.net.send(addr, tosend)
         
