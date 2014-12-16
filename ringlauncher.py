@@ -6,9 +6,12 @@ from kivy.animation import Animation
 
 class Launcher(Image):
     def __init__(self, **kwargs):
+        
+        pos = kwargs.pop('pos', (-50,-50))
+        
         super(Launcher, self).__init__(source='docklauncher512.png',
                                         size_hint=(None,None),
-                                        pos=(-50,-50),
+                                        pos=pos,
                                         #size=(100,100),
                                         #pos_x=-1900,
                                         #pos_y=-1100,
@@ -16,7 +19,8 @@ class Launcher(Image):
                                         #scale_x=.5, 
                                         #scale_y=.5, 
                                         **kwargs)
-                                        
+        
+        #icons sizes
         self.selected_scale = 1.5
         self.unselected_scale = .2
         
@@ -49,7 +53,7 @@ class Launcher(Image):
         #w.size = self.size
         super(Launcher, self).add_widget(w, index)
         
-        #calcular posicion circular
+        #calc the current position
         
 
     def on_size(self, w, val):
@@ -57,6 +61,8 @@ class Launcher(Image):
             print val
             i.size = (val[0]*self.unselected_scale, val[1]*self.unselected_scale );
             print self.children.index(i)*.2
+            
+            #set the correct pos of the children
     
 
     def on_minimized(self, anim, w):

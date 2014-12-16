@@ -8,6 +8,7 @@ Neurons Art & Technology 2012-2014 All rights reserved.
 '''
 
 #imports of kivy stuff
+from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
@@ -37,6 +38,7 @@ from ringlauncher import Launcher
 from devslib.widget3D import Image3D, Widget3D, Edit3D, Loading
 from devslib.utils import Request, alert, MessageBoxTime, fade_in, LabelItem
 from devslib.scrollbox import ScrollBox
+from devslib.network import Network
 
 #rest of libraries
 import json
@@ -49,6 +51,8 @@ About the cryptography ... Why sodium?
 http://labs.opendns.com/2013/03/06/announcing-sodium-a-new-cryptographic-library/
 
 '''
+
+net = None
 
 class Test3D(Widget3D):
     def __init__(self, **kwargs):
@@ -102,6 +106,9 @@ class TextBox(TextInput):
 
         
 class SignUp(Popup):
+    '''
+    Signup form
+    '''
     def __init__(self, **kwargs):
         
         super(SignUp, self).__init__(title='Sign Up', size_hint=(None,None), size=(400,300), **kwargs)
@@ -577,6 +584,9 @@ class Netget(FloatLayout):
         
         super(Netget, self).__init__(**kwargs)
         
+        #diccionario con los dispositivos con los que tenemos conexion directa via LAN p2p
+        self.neardevices = {}
+        
         #netget map widget
         self.netgetmap = NetgetMap(anchor_x='right', anchor_y='top')
         self.add_widget(self.netgetmap)
@@ -594,6 +604,10 @@ class Netget(FloatLayout):
         self.launcher = Launcher()
         self.add_widget(self.launcher)
 
+        #DEVICES
+        #self.devices = Launcher(pos=(-50,Window.height-50))
+        #self.add_widget(self.devices)
+
         #HOME DIRECTORY
         self.home = 'home'
 
@@ -602,6 +616,18 @@ class Netget(FloatLayout):
         
         #FOCUS THE USERNAME TEXTBOX
         self.login.txt_username.focus = True
+        
+        
+        #global network object
+        self.net = Network()
+        
+        #create conection
+        if self.net.create_connection(self.incoming):
+            #try to discover netget devices on the local network
+            self.net.host_discover()
+        else:
+            print "Error creating connection"
+        
 
         ''' TESTING FOR FUTURE CORRECTIONS ...
         self.test3D = Test3D()
@@ -615,6 +641,11 @@ class Netget(FloatLayout):
                 
         except:
             self.devID = '-1'
+        
+    def save_devID(self):
+        with open('devID', 'w+') as f:
+            f.write(self.devID)                
+                
         
     def on_logout(self, w):
         print 'Loging out'
@@ -654,9 +685,7 @@ class Netget(FloatLayout):
         
     def on_sendlogindata(self, dt):
         
-        
-        
-        #datos POST que se enviaran al script PHP
+        #datos POST que se enviaran al script PHP  (en formato json)
         data = {
                 'username':self.login.txt_username.text,
                 'password':self.login.txt_password.text, 
@@ -677,7 +706,7 @@ class Netget(FloatLayout):
         if 'OK_LOGIN' in response:
             print "Login succesfull"
             
-            res, usrID, usrNickName = response.split(':')
+            res, usrID, usrNickName, self.devID = response.split(':')
             
             self.netgetui.profile.txt_nickname.text = usrNickName
             
@@ -721,6 +750,8 @@ class Netget(FloatLayout):
                     #resize and save profile picture
                     pass
                     
+            print "Device ID: ", self.devID
+            self.save_devID()
             
         elif response == 'PASSDIFF_LOGIN':
             
@@ -770,7 +801,7 @@ class Netget(FloatLayout):
 
     def on_sendsignupdata(self, dt):
         
-        #datos POST que se enviaran al script PHP
+        #datos POST que se enviaran al script PHP (en formato json)
         data = {'email':self.signup.email.text,
                 'username':self.signup.username.text,
                 'password':self.signup.password.text
@@ -813,9 +844,34 @@ class Netget(FloatLayout):
             
             self.signup.message.text = "[color=FF0000]The user already exists[/color]"
             self.signup.open()
+            
+    def incoming(self, data_pack, addr):
+        print data_pack, addr
+                
+        if data_pack[0] == 'init_holepunch':
+            
+            print "Initiating communication with ", addr
+            
+        elif data_pack[0] == 'ping':
+            tosend = json.dumps({'msg':'ping_ack', 'data':None})
+            self.net.send(addr, tosend)
+        
+class NetgetApp(App):
+    def build(self):
+        
+        self.netget = Netget()
+        return self.netget
+        
+    def on_stop(self):
+        self.netget.net.shutdown_network()
+    
+        
+    def on_pause(self):
+        return True
+        
+    def on_resume(self):
+        pass
 
 if __name__ == '__main__':
     
-    from kivy.base import runTouchApp
-    
-    runTouchApp(Netget() )
+    NetgetApp().run()
