@@ -519,6 +519,10 @@ class NetgetUI(FloatLayout):
             
             #refill the contacts list
             Clock.schedule_once(self.fill_contact_list, 0)
+            
+        
+        #pool for contactlist refreshs each 20 seconds
+        Clock.schedule_once(self.get_contacts, 20)
         
         
     def fill_contact_list(self, dt):
@@ -539,9 +543,6 @@ class NetgetUI(FloatLayout):
             self.lst_friends.add_widget(contact)
             
         fade_in(self.lst_friends)
-        
-        #pool for contactlist refreshs each 20 seconds
-        Clock.schedule_once(self.get_contacts, 20)
         
         
     def on_contactmenu(self, w):
