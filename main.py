@@ -417,7 +417,9 @@ class NetgetUI(FloatLayout):
         
         super(NetgetUI, self).__init__(**kwargs)
         
-        self.devID = kwargs.get('devID', -1)
+        
+        #ID OF THIS DEVICE
+        self.load_devID()
     
         #SEARCHER
         self.searcher = Searcher()
@@ -455,8 +457,6 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
         
-        #PING ALIVE
-        Clock.schedule_interval(self.ping_alive, 10)
         
     def ping_alive(self, df):
         
@@ -601,6 +601,19 @@ class NetgetUI(FloatLayout):
             remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + friendID + ".jpg"
             
             self.lst_friends.add_widget(contact)
+            
+            
+    def load_devID(self):
+        try:
+            with open(os.path.join(self.homedir, 'devID') ) as f:
+                self.devID = f.readline()                
+                
+        except:
+            self.devID = '-1'
+        
+    def save_devID(self):
+        with open(os.path.join(self.homedir, 'devID') , 'w+') as f:
+            f.write(self.devID) 
         
 class NetgetMap(AnchorLayout):
     def __init__(self, **kwargs):
@@ -644,8 +657,6 @@ class Netget(FloatLayout):
         #HOME DIRECTORY
         self.home = 'home'
 
-        #ID OF THIS DEVICE
-        self.load_devID()
         
         #FOCUS THE USERNAME TEXTBOX
         self.login.txt_username.focus = True
@@ -666,18 +677,7 @@ class Netget(FloatLayout):
         self.test3D = Test3D()
         self.add_widget(self.test3D)
         '''
-        
-    def load_devID(self):
-        try:
-            with open('devID') as f:
-                self.devID = f.readline()                
-                
-        except:
-            self.devID = '-1'
-        
-    def save_devID(self):
-        with open('devID', 'w+') as f:
-            f.write(self.devID)                
+                       
                 
         
     def on_logout(self, w):
@@ -716,13 +716,20 @@ class Netget(FloatLayout):
         #set the event for create the cancel option ... 
         Clock.schedule_once(self.on_sendlogindata, 3)
         
+        #the user home paths
+        self.netgetui.homedir = os.path.join(self.home, self.login.txt_username.text)
+        self.netgetui.profiledir = os.path.join(self.netgetui.homedir, 'profile')
+        self.netgetui.appsdir = os.path.join(self.netgetui.homedir, 'apps')
+        
+        self.netgetui.load_devID()
+        
     def on_sendlogindata(self, dt):
         
         #datos POST que se enviaran al script PHP  (en formato json)
         data = {
                 'username':self.login.txt_username.text,
                 'password':self.login.txt_password.text, 
-                'devID':self.devID,
+                'devID':self.netgetui.devID,
                 'deviceName':socket.gethostname()
                 }
         
@@ -739,38 +746,34 @@ class Netget(FloatLayout):
         if 'OK_LOGIN' in response:
             print "Login succesfull"
             
-            res, usrID, usrNickName, self.devID = response.split(':')
+            res, usrID, usrNickName, self.netgetui.devID = response.split(':')
             
             self.netgetui.profile.txt_nickname.text = usrNickName
             
             self.netgetui.usrID = usrID
             self.netgetui.usrNickName = usrNickName
-            self.netgetui.devID = self.devID
             
             Clock.schedule_once(self.netgetui.get_contacts, 1)
             
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
             
-            self.homedir = os.path.join(self.home, self.netgetui.usrID)
-            self.profiledir = os.path.join(self.homedir, 'profile')
-            self.appsdir = os.path.join(self.homedir, 'apps')
             
             #create home?
             if not os.path.exists(self.home):
                 os.mkdir(self.home )
                 
             #create homedir?
-            if not os.path.exists(self.homedir):
-                os.mkdir(self.homedir )
+            if not os.path.exists(self.netgetui.homedir):
+                os.mkdir(self.netgetui.homedir )
                 
             #create profiledir?
-            if not os.path.exists(self.profiledir):
-                os.mkdir(self.profiledir )
+            if not os.path.exists(self.netgetui.profiledir):
+                os.mkdir(self.netgetui.profiledir )
             
             #create appsdir?
-            if not os.path.exists(self.appsdir):
-                os.mkdir(self.appsdir )
+            if not os.path.exists(self.netgetui.appsdir):
+                os.mkdir(self.netgetui.appsdir )
                 
             #save this session?
             if self.login.cbx_remmemberme:
@@ -778,14 +781,17 @@ class Netget(FloatLayout):
                 pass
                     
             #exist profile picture?
-            if os.path.exists(os.path.join(self.profiledir, 'profile.jpg')):
+            if os.path.exists(os.path.join(self.netgetui.profiledir, 'profile.jpg')):
                 #does not exist snap?
-                if not os.path.exists(os.path.join(self.profiledir, 'profile_snap.jpg')):
+                if not os.path.exists(os.path.join(self.netgetui.profiledir, 'profile_snap.jpg')):
                     #resize and save profile picture
                     pass
                     
-            print "Device ID: ", self.devID
-            self.save_devID()
+            self.netgetui.save_devID()
+            
+            #PING ALIVE
+            Clock.schedule_interval(self.netgetui.ping_alive, 10)
+                    
             
         elif response == 'PASSDIFF_LOGIN':
             
@@ -884,7 +890,7 @@ class Netget(FloatLayout):
         
         data_dict = json.loads(data_json)
         
-        print data_dict
+        print data_dict, addr
                 
         if data_dict["msg"] == 'init_holepunch':
             
