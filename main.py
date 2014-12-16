@@ -848,6 +848,8 @@ class Netget(FloatLayout):
     def incoming(self, data_json, addr):
         
         data_dict = json.loads(data_json)
+        
+        print data_dict
                 
         if data_dict["msg"] == 'init_holepunch':
             
