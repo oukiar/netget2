@@ -18,7 +18,7 @@ if(isset($_POST["usrID"]))
         $usrID = $row[1];
         
         #check if this user has online devices
-        $res = mysql_query("select usrID from ngDevices where devLastPing > DATE_SUB(NOW(), INTERVAL 5 MINUTE) and usrID=$usrID ");
+        $res = mysql_query("select usrID from ngDevices where devLastPing > DATE_SUB(NOW(), INTERVAL 5 MINUTES) and usrID=$usrID ");
         
         if($res)
         {

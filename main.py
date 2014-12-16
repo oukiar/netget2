@@ -469,7 +469,7 @@ class NetgetUI(FloatLayout):
         
     def res_ping_alive(self, response):
         if response == "PINGACK":
-            print "Online session revalided"
+            print "Online session revalided: ", response
         
     def on_godevices(self, w):
         print 'Going to manage my devices'

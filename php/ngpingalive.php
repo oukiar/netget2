@@ -7,7 +7,7 @@ if(isset($_POST["usrID"]))
     $devID = $_POST["devID"];
     $usrID = $_POST["usrID"];
     mysql_query("update ngDevices set devLastPing=NOW() where devID=$devID)");
-    echo "PINGACK";
+    echo "PINGACK:$devID";
 }
 else
 {
