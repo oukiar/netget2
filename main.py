@@ -282,6 +282,17 @@ class ContactItem(BoxLayout):
                                     )
         
             self.add_widget(self.btn_menu)
+            
+        #CHAT ICON
+        
+        self.btn_chat = ImageButton(source='chat_32x32.png', 
+                                allow_stretch=True, 
+                                keep_ratio=False, 
+                                size_hint_x=None, 
+                                width=30
+                                )
+    
+        self.add_widget(self.btn_chat)
                     
         
     def fixLabelText(self, w, val):
@@ -426,7 +437,7 @@ class NetgetUI(FloatLayout):
         self.add_widget(self.searcher)
         self.searcher.btn_search.bind(on_release=self.on_search)
         
-        self.left_box = BoxLayout(orientation='vertical', padding=20, size_hint_x=None, width=200)
+        self.left_box = BoxLayout(orientation='vertical', padding=20, size_hint_x=None, width=300)
         
         #NAT
         self.left_box.add_widget(Label(text='Neurons Art & Technology', size_hint_y=None, height=40))
