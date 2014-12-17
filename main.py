@@ -46,6 +46,8 @@ import json
 import os
 import socket #only for the hostname
 
+from functools import partial
+
 '''
 About the cryptography ... Why sodium?
 
@@ -294,6 +296,17 @@ class ContactItem(BoxLayout):
                                 )
     
         self.add_widget(self.btn_chat)
+        
+        
+        #P2P CONNECTION ICON
+        self.btn_connection = ImageButton(source='connection_off_32x32.png', 
+                                allow_stretch=True, 
+                                keep_ratio=False, 
+                                size_hint_x=None, 
+                                width=30
+                                )
+    
+        self.add_widget(self.btn_connection)
                     
         
     def fixLabelText(self, w, val):
@@ -498,6 +511,14 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
         
+    def get_handshakerequests(self, dt):
+
+        Request(action='http://www.orgboat.com/netget/nghandshakerequests.php', 
+                data={'usrID':self.usrID}, 
+                callback=self.res_get_handshakerequests)
+        
+    def res_get_handshakerequests(self, response):
+        print response
         
     def ping_alive(self, df):
         
@@ -586,8 +607,17 @@ class NetgetUI(FloatLayout):
         
     def on_openchat(self, w):
         print "Iniciando chat con el contacto ", w.parent.contactID
-        self.add_widget(self.chat)
         
+        if self.chat not in self.children:
+            self.add_widget(self.chat)
+        
+        #init handshake for holepunching with this friend
+        Request(action='http://www.orgboat.com/netget/nginithandshake.php', 
+                data={'usrID':self.usrID, 'contactID':w.parent.contactID}, 
+                callback=self.res_inithandshake)
+                
+    def res_inithandshake(self, response):
+        print response
         
     def on_search(self, w):
         print "Searching: ", self.searcher.txt_search.text
@@ -641,14 +671,23 @@ class NetgetUI(FloatLayout):
         if "CONTACT_ADDED" in response:
             
             res, friendID, friendNickName = response.split(":")
+            
+            Clock.schedule_once(partial(self.real_addcontact, friendID, friendNickName), 0)
+            
+            #remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + friendID + ".jpg"
+            
+            
+    def real_addcontact(self, friendID, friendNickName, *largs):
+                
+        contact = ContactItem(contactID=friendID, 
+                                profileimage='profile_32x32.png', 
+                                nickname=friendNickName, 
+                                friend=True)
         
-            contact = ContactItem(contactID=friendID, profileimage='profile_32x32.png', nickname=friendNickName, friend=True)
-            contact.btn_menu.bind(on_release=self.on_contactmenu)
-            
-            remoteimage = 'http://www.orgboat.com/netget/profilepictures/' + friendID + ".jpg"
-            
-            self.lst_friends.add_widget(contact)
-            
+        contact.btn_menu.bind(on_release=self.on_contactmenu)
+        
+        self.lst_friends.add_widget(contact)
+        
             
     def load_devID(self):
         try:
