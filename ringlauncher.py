@@ -57,12 +57,16 @@ class Launcher(Image):
         
 
     def on_size(self, w, val):
+        
+        radio = self.width*.7
+        
         for i in self.children:
             print val
             i.size = (val[0]*self.unselected_scale, val[1]*self.unselected_scale );
             print self.children.index(i)*.2
             
             #set the correct pos of the children
+            
     
 
     def on_minimized(self, anim, w):
