@@ -60,7 +60,7 @@ net = None
 class Test3D(Widget3D):
     def __init__(self, **kwargs):
         '''
-        Test the correction of coords from 3Dview to 2Dview
+        Test the correction of coords from 3Dview to 2Dview ... outdated, this code is on widget3D in to2D function
         '''
         
         ratio = float(Window.width)/Window.height
@@ -736,7 +736,7 @@ class Netget(FloatLayout):
         self.launcher = Launcher()
         self.add_widget(self.launcher)
         
-        self.launcher.add_widget(ImageButton(source='Mobile Devices.png'))
+        self.launcher.add_widget(Image3D(source='Mobile Devices.png'))
 
         #DEVICES
         #self.devices = Launcher(pos=(-50,Window.height-50))

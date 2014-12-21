@@ -3,43 +3,48 @@ from kivy.core.window import Window
 from kivy.uix.image import Image
 from kivy.animation import Animation
 
+from devslib.widget3D import Image3D, Widget3D
+from devslib.utils import ImageButton
 
 class Launcher(Image):
     def __init__(self, **kwargs):
         
-        pos = kwargs.pop('pos', (-50,-50))
+        pos = kwargs.pop('pos', (-100,-100))
         
         super(Launcher, self).__init__(source='docklauncher512.png',
                                         size_hint=(None,None),
-                                        pos=pos,
-                                        #size=(100,100),
-                                        #pos_x=-1900,
-                                        #pos_y=-1100,
-                                        #pos_z=-1400, 
-                                        #scale_x=.5, 
-                                        #scale_y=.5, 
+                                       allow_stretch=True,
                                         **kwargs)
         
         #icons sizes
         self.selected_scale = 1.5
-        self.unselected_scale = .2
+        self.unselected_scale = .3
         
         print 'Launcher image size: ', self.size
             
         #for mouse over event
         Window.bind(mouse_pos=self.mouse_over)
     
-        self.animin = Animation(size=(100,100), duration=1)
-        self.animax = Animation(size=(300,300), duration=1)
+    
+        self.animin = Animation(width=100, height=100, duration=.3)
+        self.animax = Animation(width=400, height=400, duration=.3)
         
+        
+        '''
+        self.animin = Animation(scale_x=1, scale_y=1, duration=.3)
+        self.animax = Animation(scale_x=2, scale_y=2, duration=.3)
+        '''
+            
         self.animin.bind(on_complete=self.on_minimized)
         self.animax.bind(on_complete=self.on_maximized)
 
-        self.state = 'minimising'
+        self.state = 'minimizing'
     
         self.animin.start(self)
+    
 
     def mouse_over(self, instance, pos):
+        #if self.collide_point(pos[0], pos[1]):
         if self.collide_point(pos[0], pos[1]):
             if self.state == 'iddle_min':
                 self.state = 'maximising'
@@ -49,25 +54,21 @@ class Launcher(Image):
                 self.state = 'minimising'
                 self.animin.start(self)
 
-    def add_widget(self, w, index=0):
-        #w.size = self.size
-        super(Launcher, self).add_widget(w, index)
-        
-        #calc the current position
-        
 
+    
+    
+    
     def on_size(self, w, val):
         
         radio = self.width*.7
         
         for i in self.children:
-            print val
-            i.size = (val[0]*self.unselected_scale, val[1]*self.unselected_scale );
-            print self.children.index(i)*.2
-            
-            #set the correct pos of the children
-            
-    
+            #newsize = (val[0]*self.unselected_scale, val[1]*self.unselected_scale )
+            #print 'Newsize: ', newsize
+            i.size = (val[0]*self.unselected_scale, val[1]*self.unselected_scale)
+
+
+
 
     def on_minimized(self, anim, w):
         self.state = 'iddle_min'
@@ -77,10 +78,31 @@ class Launcher(Image):
 
 
 if __name__ == '__main__':
+    
+    def on_iconpress(object):
+        print 'Pressed icon'
+    
     from kivy.base import runTouchApp
     
     launcher = Launcher()
-    launcher.add_widget(Image(size_hint=(None,None), size=(10,10), source='shotcamfront.png', allow_stretch=True, keep_ratio=False))
     
+    img = ImageButton(size_hint=(None,None),
+                  size=(100,100),
+                source='shotcam.png',
+                allow_stretch=True,
+                      on_press=on_iconpress
+                  )
+                  
+    img.pos = (50,50)
+    
+    launcher.add_widget(img)
+    '''
+    img = Image(size_hint=(None,None),
+                  size=(100,100),
+                  source='clock.png'
+                  )
+        
+    launcher.add_widget(img)
+    '''
     runTouchApp( launcher )
 
