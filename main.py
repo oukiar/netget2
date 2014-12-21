@@ -736,7 +736,7 @@ class Netget(FloatLayout):
         self.launcher = Launcher()
         self.add_widget(self.launcher)
         
-        self.launcher.add_widget(Image3D(source='Mobile Devices.png'))
+        self.launcher.add_widget(Image(source='Mobile Devices.png'))
 
         #DEVICES
         #self.devices = Launcher(pos=(-50,Window.height-50))
