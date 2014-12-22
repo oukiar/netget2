@@ -511,7 +511,6 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
     
-        Clock.schedule_interval(self.get_handshakerequests, 3)
         
     def get_handshakerequests(self, dt):
 
@@ -521,13 +520,14 @@ class NetgetUI(FloatLayout):
         
     def res_get_handshakerequests(self, response):
     
-        self.data = json.loads(response)
+        data = json.loads(response)
     
-        print 'Initiating %d handshakes' % len(self.data)
+        if len(data) > 0:
+            print 'Initiating %d handshakes' % len(data)
     
-        for i in self.data:
-            print 'Configured holepunch to contactID: ', i
-            #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+            for i in data:
+                print 'Configured holepunch to contactID: ', (i, data[i])
+                #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
     
     def holepunch_p2p(self, dt, ip):
         print 'Maintaining hole puch with ', ip
@@ -892,7 +892,9 @@ class Netget(FloatLayout):
             
             #PING ALIVE
             Clock.schedule_interval(self.netgetui.ping_alive, 10)
-                    
+    
+            Clock.schedule_interval(self.netgetui.get_handshakerequests, 3)
+        
             
         elif response == 'PASSDIFF_LOGIN':
             
