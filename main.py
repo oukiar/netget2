@@ -630,8 +630,13 @@ class NetgetUI(FloatLayout):
                 callback=self.res_inithandshake)
                 
     def res_inithandshake(self, response):
-        print response
         
+        if 'HANDSHAKESAVED' in response:
+            
+            print 'Configured holepunch to contactID: ', (i, data[i])
+            #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+
+
     def on_search(self, w):
         print "Searching: ", self.searcher.txt_search.text
         
