@@ -527,9 +527,9 @@ class NetgetUI(FloatLayout):
     
             for i in data:
                 print 'Configured holepunch to contactID: ', (i, data[i])
-                #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+                Clock.schedule_interval(partial(self.holepunch_p2p, i), 1)
     
-    def holepunch_p2p(self, dt, ip):
+    def holepunch_p2p(self, ip, dt):
         print 'Maintaining hole puch with ', ip
     
     
@@ -641,12 +641,12 @@ class NetgetUI(FloatLayout):
             print 'Configured holepunch to contactID: ', ips
 
             for ip in ips:
-                Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+                Clock.schedule_interval(partial(self.holepunch_p2p, str(ip) ), 1)
 
 
     def on_search(self, w):
         print "Searching: ", self.searcher.txt_search.text
-        
+    
         Request(action='http://www.orgboat.com/netget/ngsearch.php', 
                 data={'txt_search':self.searcher.txt_search.text}, 
                 callback=self.res_search)
