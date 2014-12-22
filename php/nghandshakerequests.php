@@ -6,8 +6,7 @@ if(isset($_POST["usrID"]))
 {
     $usrID = $_POST["usrID"];
     
-    $result = mysql_query("select contactID from ngHandshakes 
-                            where usrID=$usrID");
+    $result = mysql_query("select usrID from ngHandshakes where contactID=$usrID");
     
     $jsonData = array();
     
@@ -15,17 +14,16 @@ if(isset($_POST["usrID"]))
     {
         $contactID = $row[0];
         
-        #check if this user has online devices
-        $res = mysql_query("select usrID from ngDevices where devLastPing > DATE_SUB(NOW(), INTERVAL 1 MINUTE) and usrID=$friendID ");
+        $res = mysql("select devIP from ngDevices where usrID=$usrID");
         
-        if($res)
+        $ips = array();
+        
+        while($row = mysql_fetch_row($res) )
         {
-            if($r = mysql_fetch_row($res))
-            {
-                $jsonData[$usrNickName] = $friendID;
-            }
+            array_push($ips, $row[0]);
         }
-
+        
+        $jsonData[$contactID] = $ips;
     }
     
     echo json_encode($jsonData);
