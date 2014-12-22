@@ -14,7 +14,7 @@ if(isset($_POST["usrID"]))
     {
         $contactID = $row[0];
         
-        $res = mysql("select devIP from ngDevices where usrID=$usrID");
+        $res = mysql("select devIP from ngDevices where usrID=$contactID");
         
         $ips = array();
         

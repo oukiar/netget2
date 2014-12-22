@@ -530,7 +530,7 @@ class NetgetUI(FloatLayout):
             #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
     
     def holepunch_p2p(self, dt, ip):
-        print 'MAintaining hole puch with ', ip
+        print 'Maintaining hole puch with ', ip
     
     
     def ping_alive(self, df):
