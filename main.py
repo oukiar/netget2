@@ -527,7 +527,7 @@ class NetgetUI(FloatLayout):
     
             for i in data:
                 print 'Configured holepunch to contactID: ', (i, data[i])
-                Clock.schedule_interval(partial(self.holepunch_p2p, i), 1)
+                Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
     
     def holepunch_p2p(self, ip, dt):
         print 'Maintaining hole puch with ', ip
