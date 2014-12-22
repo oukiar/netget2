@@ -629,12 +629,19 @@ class NetgetUI(FloatLayout):
                 data={'usrID':self.usrID, 'contactID':w.parent.contactID}, 
                 callback=self.res_inithandshake)
                 
-    def res_inithandshake(self, response):
+    def res_inithandshake(self, jsondata):
         
-        if 'HANDSHAKESAVED' in response:
+        data = json.loads(jsondata)
+        
+        response = data['response']
+        ips = data['ips']
+        
+        if response == 'HANDSHAKESAVED':
             
-            print 'Configured holepunch to contactID: ', (i, data[i])
-            #Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+            print 'Configured holepunch to contactID: ', ips
+
+            for ip in ips:
+                Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
 
 
     def on_search(self, w):

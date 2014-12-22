@@ -7,6 +7,7 @@ if(isset($_POST["usrID"]))
     $usrID = $_POST["usrID"];
     $contactID = $_POST["contactID"];
     
+    //almacenar peticion de handshake
     mysql_query("insert into ngHandshakes values($usrID, $contactID)");
     
     //obtener las ips del usuario contacto
@@ -19,8 +20,12 @@ if(isset($_POST["usrID"]))
         array_push($ips, $row[0]);
     }
     
+    $jsonData = array();
+    $jsonData["response"] = "HANDSHAKESAVED";
+    $jsonData["ips"] = $ips;
     
-    echo "HANDSHAKESAVED:$ips";
+    
+    echo json_encode($jsonData);
 }
 else
 {
