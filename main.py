@@ -503,7 +503,10 @@ class NetgetUI(FloatLayout):
     
         #
         for port in range(1001, 65535):
-            self.net.send((ip, port), tosend)
+
+            addr = (ip, port)
+            
+            self.net.send(addr, tosend)
     
         
     def get_handshakerequests(self, dt):
