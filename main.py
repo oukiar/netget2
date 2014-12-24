@@ -641,13 +641,17 @@ class NetgetUI(FloatLayout):
         
         response = data['response']
         ips = data['ips']
+        contactID = data['contactID']
         
         if response == 'HANDSHAKESAVED':
             
-            print 'Configured holepunch to contactID: ', ips
+            print 'Initiating wide holepunch to contactID: ', contactID
 
             for ip in ips:
-                Clock.schedule_interval(partial(self.holepunch_p2p, str(ip) ), 1)
+
+                self.wide_holepuch(ip, contactID)
+
+                #Clock.schedule_interval(partial(self.holepunch_p2p, str(ip) ), 1)
 
 
     def on_search(self, w):
@@ -913,7 +917,7 @@ class Netget(FloatLayout):
             #PING ALIVE
             Clock.schedule_interval(self.netgetui.ping_alive, 10)
     
-            Clock.schedule_interval(self.netgetui.get_handshakerequests, 3)
+            Clock.schedule_interval(self.netgetui.get_handshakerequests, 10)
         
             
         elif response == 'PASSDIFF_LOGIN':

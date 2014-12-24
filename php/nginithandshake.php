@@ -22,6 +22,7 @@ if(isset($_POST["usrID"]))
     
     $jsonData = array();
     $jsonData["response"] = "HANDSHAKESAVED";
+    $jsonData["contactID"] = $contactID;
     $jsonData["ips"] = $ips;
     
     
