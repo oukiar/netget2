@@ -37,15 +37,16 @@ from ringlauncher import Launcher
 
 #devslib imports
 from devslib.widget3D import Image3D, Widget3D, Edit3D, Loading
-from devslib.utils import Request, alert, MessageBoxTime, fade_in, LabelItem
+from devslib.utils import Request, alert, MessageBoxTime, fade_in, LabelItem, ImageButton
 from devslib.scrollbox import ScrollBox
 from devslib.network import Network
 
 #rest of libraries
 import json
 import os
-import socket #only for the hostname
+import socket #only for the hostname-machinename
 
+#userfull for callbacks with extra arguments
 from functools import partial
 
 '''
@@ -55,28 +56,6 @@ http://labs.opendns.com/2013/03/06/announcing-sodium-a-new-cryptographic-library
 
 '''
 
-net = None
-
-class Test3D(Widget3D):
-    def __init__(self, **kwargs):
-        '''
-        Test the correction of coords from 3Dview to 2Dview ... outdated, this code is on widget3D in to2D function
-        '''
-        
-        ratio = float(Window.width)/Window.height
-        
-        xratiofix = 100.0/(Window.width/2)*ratio
-        yratiofix = 100.0/(Window.height/2)
-        
-        super(Test3D, self).__init__(pos_x=-1*ratio, pos_y=-1, scale_x=1.0/100*xratiofix, scale_y=1.0/100*yratiofix, pos_z=-1, **kwargs)
-        
-        
-        
-        self.add_widget(Button(text='Hi', size_hint=(None,None),  ))
-
-
-class ImageButton(ButtonBehavior, Image):
-    pass
     
 class TextBox(TextInput):
     def __init__(self, **kwargs):
@@ -96,7 +75,7 @@ class TextBox(TextInput):
         super(TextBox, self).insert_text(substring)
         
     def on_focus(self, w, val):
-        #bad fix, but works
+        #ugly fix, but works
         if hasattr(super(TextBox, self), 'on_focus'):
             super(TextBox, self).on_focus(w, val)
         
@@ -467,6 +446,7 @@ class NetgetUI(FloatLayout):
         
         super(NetgetUI, self).__init__(**kwargs)
         
+        self.net = kwargs.get('net')
         
         #ID OF THIS DEVICE
         self.load_devID()
@@ -511,6 +491,20 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
     
+    def wide_holepuch(self, ip, contactID):
+        '''
+        Funcion encargada de enviar paquetes ping al host con la ip proporcionada para
+        determinar los puertos netget abiertos por dicho host esperando respuesta del
+        host interno correcto
+        '''
+    
+        #data to send
+        tosend = json.dumps({'msg':'widehp', 'data':contactID })
+    
+        #
+        for port in range(1001, 65535):
+            self.net.send((ip, port), tosend)
+    
         
     def get_handshakerequests(self, dt):
 
@@ -526,8 +520,13 @@ class NetgetUI(FloatLayout):
             print 'Initiating %d handshakes' % len(data)
     
             for i in data:
-                print 'Configured holepunch to contactID: ', (i, data[i])
-                Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
+                print 'Initiating wide holepunch with the peer ', data[i]
+                
+                #init a wide (full) holepunch to this ip host searching the contactID loged
+                self.wide_holepuch(data[i], i)
+
+                #print 'Configured holepunch to contactID: ', (i, data[i])
+                #Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
     
     def holepunch_p2p(self, ip, dt):
         print 'Maintaining hole puch with ', ip
@@ -754,8 +753,6 @@ class Netget(FloatLayout):
         
         self.add_widget(self.login)
         
-        self.netgetui = NetgetUI()
-        self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
 
         #launcher
         self.launcher = Launcher()
@@ -784,6 +781,10 @@ class Netget(FloatLayout):
             self.net.host_discover()
         else:
             print "Error creating connection"
+            self.net = None
+        
+        self.netgetui = NetgetUI(net=self.net)
+        self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
         
 
         ''' TESTING FOR FUTURE CORRECTIONS ...
@@ -1017,6 +1018,13 @@ class Netget(FloatLayout):
         elif data_dict["msg"] == 'ping':
             tosend = json.dumps({'msg':'ping_ack', 'data':None})
             self.net.send(addr, tosend)
+                
+        elif data_dict["msg"] == 'widehp':
+            #check if this holepunch is for us
+            if data_dict['data'] == self.netgetui.usrID:
+            
+                tosend = json.dumps({'msg':'widehp_ack', 'data':None})
+                self.net.send(addr, tosend)
         
 class NetgetApp(App):
     def build(self):
