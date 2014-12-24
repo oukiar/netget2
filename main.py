@@ -522,14 +522,16 @@ class NetgetUI(FloatLayout):
         if len(data) > 0:
             print 'Initiating %d handshakes' % len(data)
     
-            for i in data:
-                print 'Initiating wide holepunch with the peer ', data[i]
+            for contactID in data:
+                print 'Initiating wide holepunch with the peer ', (contactID, data[contactID])
                 
-                #init a wide (full) holepunch to this ip host searching the contactID loged
-                self.wide_holepuch(data[i], i)
+                for ip in data[contactID]:
+                
+                    #init a wide (full) holepunch to this ip host searching the contactID loged
+                    self.wide_holepuch(ip, contactID)
 
-                #print 'Configured holepunch to contactID: ', (i, data[i])
-                #Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
+                    #print 'Configured holepunch to contactID: ', (i, data[i])
+                    #Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
     
     def holepunch_p2p(self, ip, dt):
         print 'Maintaining hole puch with ', ip
