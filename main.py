@@ -645,7 +645,7 @@ class NetgetUI(FloatLayout):
         
         if response == 'HANDSHAKESAVED':
             
-            print 'Initiating wide holepunch to contactID: ', contactID
+            print 'Initiating wide holepunch to contactID: ', (contactID, ips)
 
             for ip in ips:
 
