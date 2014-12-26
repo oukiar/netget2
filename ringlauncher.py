@@ -11,7 +11,7 @@ class Launcher(Image):
         
         pos = kwargs.pop('pos', (-100,-100))
         
-        super(Launcher, self).__init__(source='docklauncher512.png',
+        super(Launcher, self).__init__(source='docklauncher512x512.png',
                                         size_hint=(None,None),
                                        allow_stretch=True,
                                         **kwargs)
