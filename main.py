@@ -786,6 +786,12 @@ class Netget(FloatLayout):
         #global network object
         self.net = Network()
         
+        #request an ip of one stun server
+        Request(action='http://www.orgboat.com/netget/nggetstunserver.php', 
+                data={}, 
+                callback=self.res_getstunserver)
+        
+        
         #create conection
         if self.net.create_connection(self.incoming):
             #try to discover netget devices on the local network
@@ -797,13 +803,28 @@ class Netget(FloatLayout):
         self.netgetui = NetgetUI(net=self.net)
         self.netgetui.profile.menu.btn_logout.bind(on_release=self.on_logout)
         
+        
 
         ''' TESTING FOR FUTURE CORRECTIONS ...
         self.test3D = Test3D()
         self.add_widget(self.test3D)
         '''
                        
-                
+    def res_getstunserver(self, response):
+        '''
+        nat traversal process ... initiating protocol with stun server
+        '''
+        
+        print 'Connecting with stun server: ', response
+        
+        stunserverip = response
+        
+        #data to send
+        tosend = json.dumps({'msg':'stun_request', 'data':None})
+
+        #send request to this stun server, basicly we need our public ip
+        addr = (stunserverip, 31415)
+        self.net.send(addr, tosend)
         
     def on_logout(self, w):
         print 'Loging out'
