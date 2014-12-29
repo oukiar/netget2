@@ -815,8 +815,6 @@ class Netget(FloatLayout):
         nat traversal process ... initiating protocol with stun server
         '''
         
-        print 'Connecting with stun server: ', response
-        
         stunserverip = response
         
         #data to send
@@ -825,6 +823,8 @@ class Netget(FloatLayout):
         #send request to this stun server, basicly we need our public ip
         addr = (stunserverip, 31415)
         self.net.send(addr, tosend)
+        
+        print 'Connecting with stun server: ', addr
         
     def on_logout(self, w):
         print 'Loging out'
