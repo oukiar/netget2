@@ -66,7 +66,7 @@ class StunServer(FloatLayout):
             self.log.text += 'Solving public IP for %s' % str(addr)
             
             #data to send
-            tosend = json.dumps({'msg':'stun_request', 'data':addr})
+            tosend = json.dumps({'msg':'your_public_address', 'data':addr})
 
             self.net.send(addr, tosend)
 

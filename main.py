@@ -764,6 +764,8 @@ class Netget(FloatLayout):
         
         self.add_widget(self.login)
         
+        self.txt_publicaddress = Label(text='Obtaining public address ...', size_hint_y=None, height=100)
+        self.add_widget(self.txt_publicaddress)
 
         #launcher
         self.launcher = Launcher()
@@ -1056,8 +1058,16 @@ class Netget(FloatLayout):
             if data_dict['data'] == self.netgetui.usrID:
             
                 tosend = json.dumps({'msg':'widehp_ack', 'data':None})
-                self.net.send(addr, tosend)
+                self.net.send(addr, tosend)  
         
+        elif data_dict["msg"] == 'your_public_address':
+            
+            #show my public data
+            self.txt_publicaddress.text = data_dict["data"]
+            
+            #tosend = json.dumps({'msg':'ping_ack', 'data':None})
+            #self.net.send(addr, tosend)
+            
 class NetgetApp(App):
     def build(self):
         
