@@ -64,7 +64,7 @@ class StunServer(FloatLayout):
 
         if data['msg'] == 'stun_request':
             self.log.text += 'Solving public IP for %s' % str(addr)
-            self.net.send(addr, {'msg':'public_addr', 'data':addr})
+            self.net.send(addr, {'msg':'public_addr', 'data':str(addr)})
 
     def __del__(self, **kwargs):
         self.net.network_shutdown()
