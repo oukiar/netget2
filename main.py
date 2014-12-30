@@ -1063,7 +1063,9 @@ class Netget(FloatLayout):
         elif data_dict["msg"] == 'your_public_address':
             
             #show my public data
-            self.txt_publicaddress.text = data_dict["data"]
+            ip, port = data_dict["data"]
+            
+            self.txt_publicaddress.text = "Public IP: %s\nPublic port: %s" % (ip, str(port))
             
             #tosend = json.dumps({'msg':'ping_ack', 'data':None})
             #self.net.send(addr, tosend)
