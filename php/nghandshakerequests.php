@@ -15,13 +15,13 @@ if(isset($_POST["usrID"]))
     {
         $contactID = $row[0];
         
-        $res = mysql_query("select devIP from ngDevices where usrID=$contactID");
+        $res = mysql_query("select devIP, udp_port from ngDevices where usrID=$contactID");
         
         $ips = array();
         
         while($row = mysql_fetch_row($res) )
         {
-            array_push($ips, $row[0]);
+            array_push($ips, array("ip"=>$row[0], "port"=>$row[2]));
         }
         
         $jsonData[$contactID] = $ips;

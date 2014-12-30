@@ -33,10 +33,17 @@ if(isset($_POST["username"]))
                 
                 //try to verify the devID
                 $devID = $_POST["devID"];
-            
-                mysql_query("update ngDevices set devIP=$deviceIP, devLastPing=NOW() where devID=$devID");
                 
+                if(exists("ngDevices", "devID", $devID) )
+                {
+                    mysql_query("update ngDevices set devIP='$deviceIP', devLastPing=NOW() where devID=$devID");
+                }
+                else
+                {
+                    mysql_query("insert into ngDevices(devName, devIP, devLastPing, usrID) values('$deviceName', '$deviceIP', NOW(), $usrID)");
                 
+                    $devID = mysql_insert_id();
+                }
             }
             
             
