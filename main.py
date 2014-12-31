@@ -530,14 +530,25 @@ class NetgetUI(FloatLayout):
                 for ip in data[contactID]:
                 
                     #init a wide (full) holepunch to this ip host searching the contactID loged
-                    self.wide_holepuch(ip, contactID)
+                    #self.wide_holepuch(ip, contactID)
 
                     #print 'Configured holepunch to contactID: ', (i, data[i])
-                    #Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
+                    Clock.schedule_interval(partial(self.holepunch_p2p, data[i]), 1)
     
-    def holepunch_p2p(self, ip, dt):
-        print 'Maintaining hole puch with ', ip
+    def holepunch_p2p(self, addr, dt):
+        print 'Maintaining hole puch with ', addr
     
+        '''
+        #data to send
+        tosend = json.dumps({'msg':'widehp', 'data':contactID })
+    
+        #
+        for port in range(1001, 65535):
+
+            addr = (ip, port)
+            
+            self.net.send(addr, tosend)
+        '''
     
     def ping_alive(self, df):
         
@@ -1067,12 +1078,27 @@ class Netget(FloatLayout):
             
             self.txt_publicaddress.text = "Public IP: %s\nPublic port: %s" % (ip, str(port))
             
+            #informar al server principal sobre nuestro puerto UDP publico (resuelto gracias al servidor stun)
+            
+            data = {
+                    'ip':ip,
+                    'port':port, 
+                    'devID':self.netgetui.devID
+                    }
+            
+            Request(action='http://www.orgboat.com/netget/ngsavepublicip.php', data=data, callback=self.res_savepublicaddr)
+            
             #tosend = json.dumps({'msg':'ping_ack', 'data':None})
             #self.net.send(addr, tosend)
             
+    def res_savepublicaddr(self, response):
+        print response
+        
+from webview import Wv
+            
 class NetgetApp(App):
     def build(self):
-        
+        #return Wv()
         self.netget = Netget()
         return self.netget
         
