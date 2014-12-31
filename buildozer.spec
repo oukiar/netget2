@@ -55,7 +55,7 @@ fullscreen = 1
 #
 
 # (list) Permissions
-#android.permissions = INTERNET
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, WAKE_LOCK
 
 # (int) Android API to use
 #android.api = 14
