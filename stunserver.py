@@ -63,7 +63,7 @@ class StunServer(FloatLayout):
         data = json.loads(datajson)
 
         if data['msg'] == 'stun_request':
-            self.log.text += 'Solving public IP for %s' % str(addr)
+            self.log.text += 'Solving public IP for %s\n' % str(addr)
             
             #data to send
             tosend = json.dumps({'msg':'your_public_address', 'data':addr})
