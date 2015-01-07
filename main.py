@@ -765,6 +765,8 @@ class Netget(FloatLayout):
         #diccionario con los dispositivos con los que tenemos conexion directa via LAN p2p
         self.neardevices = {}
         
+        self.state = "logedout"
+        
         #netget map widget
         self.netgetmap = NetgetMap(anchor_x='right', anchor_y='top')
         self.add_widget(self.netgetmap)
@@ -842,10 +844,16 @@ class Netget(FloatLayout):
     def on_logout(self, w):
         print 'Loging out'
         
+        
+        self.state = "logedout"
+        
         self.netgetui.profile.menu.dismiss()
         self.remove_widget(self.netgetui)
         
-        self.add_widget(self.login)
+        if self.login not in self.children:
+            print "Readding login widget"
+            self.add_widget(self.login)
+        
         fade_in(self.login)
         
     def on_size(self, instance, val):
@@ -858,6 +866,8 @@ class Netget(FloatLayout):
         
         
     def on_login(self, w):
+        self.state = "loginin"
+        
         self.remove_widget(self.login)
         
         #poner icono de loading
@@ -905,6 +915,8 @@ class Netget(FloatLayout):
         if 'OK_LOGIN' in response:
             print "Login succesfull"
             
+            self.state = "loged"
+            
             res, usrID, usrNickName, self.netgetui.devID = response.split(':')
             
             self.netgetui.profile.txt_nickname.text = usrNickName
@@ -917,40 +929,16 @@ class Netget(FloatLayout):
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
             
+            #directories of this user
+            self.create_session_structure()
             
-            #create home?
-            if not os.path.exists(self.home):
-                os.mkdir(self.home )
-                
-            #create homedir?
-            if not os.path.exists(self.netgetui.homedir):
-                os.mkdir(self.netgetui.homedir )
-                
-            #create profiledir?
-            if not os.path.exists(self.netgetui.profiledir):
-                os.mkdir(self.netgetui.profiledir )
-            
-            #create appsdir?
-            if not os.path.exists(self.netgetui.appsdir):
-                os.mkdir(self.netgetui.appsdir )
-                
-            #save this session?
-            if self.login.cbx_remmemberme:
-                #save session data
-                pass
-                    
-            #exist profile picture?
-            if os.path.exists(os.path.join(self.netgetui.profiledir, 'profile.jpg')):
-                #does not exist snap?
-                if not os.path.exists(os.path.join(self.netgetui.profiledir, 'profile_snap.jpg')):
-                    #resize and save profile picture
-                    pass
-                    
+            #guardar el ID de este dispositivo
             self.netgetui.save_devID()
             
             #PING ALIVE
             Clock.schedule_interval(self.netgetui.ping_alive, 10)
     
+            #obtener peticiones de inicio de comunicacion
             Clock.schedule_interval(self.netgetui.get_handshakerequests, 10)
         
             
@@ -964,10 +952,38 @@ class Netget(FloatLayout):
             self.login.message.text = '[color=FF0000]User is not registered[/color]'
             self.add_widget(self.login)
 
+    def create_session_structure(self):
+        
+        #create home?
+        if not os.path.exists(self.home):
+            os.mkdir(self.home )
+            
+        #create homedir?
+        if not os.path.exists(self.netgetui.homedir):
+            os.mkdir(self.netgetui.homedir )
+            
+        #create profiledir?
+        if not os.path.exists(self.netgetui.profiledir):
+            os.mkdir(self.netgetui.profiledir )
+        
+        #create appsdir?
+        if not os.path.exists(self.netgetui.appsdir):
+            os.mkdir(self.netgetui.appsdir )
+            
+        #save this session?
+        if self.login.cbx_remmemberme:
+            #save session data
+            pass
+                
+        #exist profile picture?
+        if os.path.exists(os.path.join(self.netgetui.profiledir, 'profile.jpg')):
+            #does not exist snap?
+            if not os.path.exists(os.path.join(self.netgetui.profiledir, 'profile_snap.jpg')):
+                #resize and save profile picture
+                pass
         
     def on_headerloginpress(self, w, value):
         if value == 'signup':
-            self.remove_widget(self.login)
             
             self.signup = SignUp()
             self.signup.open()
@@ -975,9 +991,15 @@ class Netget(FloatLayout):
             self.signup.btn_submit.bind(on_press=self.on_signup)
             
     def on_closed_signup(self, w):
-        self.add_widget(self.login)
+        if self.state != "signinup":
+            
+            self.add_widget(self.login)
             
     def on_signup(self, w):
+        
+        self.state = "signinup"
+        
+        self.remove_widget(self.login)
         
         if self.signup.password.text != self.signup.rpassword.text:
             self.signup.message.text = "[color=FF0000]Passwords does not match[/color]"
@@ -999,17 +1021,27 @@ class Netget(FloatLayout):
 
         self.boxlogin.add_widget(Label(text='[color=EE0000]Cancel subscription[/color]', markup=True, size_hint_y=None, height=200))
         
+        self.add_widget(self.boxlogin)
+        
+        
         #set the event for create the cancel option ... 
         Clock.schedule_once(self.on_sendsignupdata, 3)
         
-        self.add_widget(self.boxlogin)
+        #the user home paths
+        self.netgetui.homedir = os.path.join(self.home, self.login.txt_username.text)
+        self.netgetui.profiledir = os.path.join(self.netgetui.homedir, 'profile')
+        self.netgetui.appsdir = os.path.join(self.netgetui.homedir, 'apps')
+        
+        self.netgetui.load_devID()
+        
 
     def on_sendsignupdata(self, dt):
         
         #datos POST que se enviaran al script PHP (en formato json)
         data = {'email':self.signup.email.text,
                 'username':self.signup.username.text,
-                'password':self.signup.password.text
+                'password':self.signup.password.text,
+                'deviceName':socket.gethostname()
                 }
         
         #intentar crear cuenta
@@ -1025,7 +1057,9 @@ class Netget(FloatLayout):
             
             print "Signup succesfull"
             
-            res, usrID, usrNickName = response.split(':')
+            self.state = "loged"
+            
+            res, usrID, usrNickName, self.netgetui.devID = response.split(':')
             
             self.netgetui.profile.txt_nickname.text = usrNickName
             
@@ -1036,7 +1070,18 @@ class Netget(FloatLayout):
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
             
-            #ask if this profile must be saved
+            #directories of this user
+            self.create_session_structure()
+            
+            #guardar el ID de este dispositivo
+            self.netgetui.save_devID()
+            
+            #PING ALIVE
+            Clock.schedule_interval(self.netgetui.ping_alive, 10)
+    
+            #obtener peticiones de inicio de comunicacion
+            Clock.schedule_interval(self.netgetui.get_handshakerequests, 10)
+            
             
             
             
