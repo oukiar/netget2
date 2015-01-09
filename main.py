@@ -491,6 +491,10 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
         
+        Clock.schedule_interval(self.get_friendrequests, 5);
+        
+    def get_friendrequests(self, dt):
+        
         #obtener solicitudes de amistad
         Request(action='http://www.orgboat.com/netget/nggetfriendrequests.php', 
                 data={'usrID':self.usrID}, 
