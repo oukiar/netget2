@@ -491,7 +491,6 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
         
-        Clock.schedule_interval(self.get_friendrequests, 5);
         
     def get_friendrequests(self, dt):
         
@@ -952,6 +951,9 @@ class Netget(FloatLayout):
     
             #obtener peticiones de inicio de comunicacion
             Clock.schedule_interval(self.netgetui.get_handshakerequests, 10)
+            
+            #solicitudes de amistad
+            Clock.schedule_interval(self.netgetui.get_friendrequests, 5);
         
             
         elif response == 'PASSDIFF_LOGIN':

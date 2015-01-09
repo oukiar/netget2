@@ -16,7 +16,7 @@ if(isset($_POST["usrID"]))
         $friendID = $row[0];
         
         //verificamos si tenemos amistad con esta persona
-        $res = mysql_query("select usrID from ngRelationships where friendID=$friendID");
+        $res = mysql_query("select usrID from ngRelationships where friendID=$friendID and usrID=$usrID");
         
         if($row2 = mysql_fetch_row($res))
         {
