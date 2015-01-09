@@ -490,6 +490,14 @@ class NetgetUI(FloatLayout):
         
         #contact menu
         self.contactmenu = ContactMenu()
+        
+        #obtener solicitudes de amistad
+        Request(action='http://www.orgboat.com/netget/nggetfriendrequests.php', 
+                data={'usrID':self.usrID}, 
+                callback=self.res_get_friendrequests)
+    
+    def res_get_friendrequests(self, response):
+        print "Friend requests: ", response
     
     def wide_holepuch(self, ip, contactID):
         '''
