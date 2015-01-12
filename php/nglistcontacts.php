@@ -18,13 +18,15 @@ if(isset($_POST["usrID"]))
         $friendID = $row[1];
         
         #check if this user has online devices
-        $res = mysql_query("select usrID from ngDevices where devLastPing > DATE_SUB(NOW(), INTERVAL 1 MINUTE) and usrID=$friendID ");
+        $res = mysql_query("select count(usrID) from ngDevices where devLastPing > DATE_SUB(NOW(), INTERVAL 1 MINUTE) and usrID=$friendID ");
         
         if($res)
         {
             if($r = mysql_fetch_row($res))
             {
-                $jsonData[$usrNickName] = $friendID;
+                
+                if($r[0])
+                    $jsonData[$usrNickName] = $friendID;
             }
         }
 
