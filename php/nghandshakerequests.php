@@ -21,7 +21,7 @@ if(isset($_POST["usrID"]))
         
         while($row = mysql_fetch_row($res) )
         {
-            array_push($ips, array("ip"=>$row[0], "port"=>$row[2]));
+            array_push($ips, array("ip"=>$row[0], "port"=>$row[1]));
         }
         
         $jsonData[$contactID] = $ips;

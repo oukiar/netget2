@@ -536,7 +536,7 @@ class NetgetUI(FloatLayout):
             print 'Initiating %d handshakes' % len(data)
     
             for contactID in data:
-                print 'Initiating wide holepunch with the peer ', (contactID, data[contactID])
+                print 'Initiating holepunch with the peer ', (contactID, data[contactID])
                 
                 for ip in data[contactID]:
                 
@@ -544,23 +544,15 @@ class NetgetUI(FloatLayout):
                     #self.wide_holepuch(ip, contactID)
 
                     #print 'Configured holepunch to contactID: ', (i, data[i])
-                    Clock.schedule_interval(partial(self.holepunch_p2p, ip), 1)
+                    Clock.schedule_interval(partial(self.holepunch_p2p, ip, contactID), 1)
     
-    def holepunch_p2p(self, addr, dt):
+    def holepunch_p2p(self, addr, contactID, dt):
         print 'Maintaining hole puch with ', addr
     
-        '''
         #data to send
-        tosend = json.dumps({'msg':'widehp', 'data':contactID })
-    
-        #
-        for port in range(1001, 65535):
+        tosend = json.dumps({'msg':'holepunch', 'data':contactID })        
+        self.net.send(addr, tosend)
 
-            addr = (ip, port)
-            
-            self.net.send(addr, tosend)
-        '''
-    
     def ping_alive(self, df):
         
         if self.devID == -1:
@@ -1117,7 +1109,7 @@ class Netget(FloatLayout):
                 
         if data_dict["msg"] == 'init_holepunch':
             
-            print "Initiating communication with ", addr
+            print "[FAKE] Initiating communication with ", addr
             
         elif data_dict["msg"] == 'ping':
             tosend = json.dumps({'msg':'ping_ack', 'data':None})
@@ -1129,6 +1121,13 @@ class Netget(FloatLayout):
             
                 tosend = json.dumps({'msg':'widehp_ack', 'data':None})
                 self.net.send(addr, tosend)  
+                
+        elif data_dict["msg"] == 'holepunch':
+            #check if this holepunch is for us
+            if data_dict['data'] == self.netgetui.usrID:
+            
+                tosend = json.dumps({'msg':'holepunch_ack', 'data':None})
+                self.net.send(addr, tosend)
         
         elif data_dict["msg"] == 'your_public_address':
             
