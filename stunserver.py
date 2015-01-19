@@ -1,22 +1,24 @@
+
+'''
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
+'''
 
-from devslib.network import Network
-from devslib.utils import Request
+from devslib.network import Network, Request, TimerInterval
 
 import json
 
-import socket #only for the hostname-machinename
+import socket #only for the hostname-machinename ... NOTE: Move this to network.py
 
 '''
 ::documentation
 http://es.wikipedia.org/wiki/STUN
 '''
 
-class StunServer(FloatLayout):
+class StunServer:
     def __init__(self, **kwargs):
-        super(StunServer, self).__init__(**kwargs)
+        #super(StunServer, self).__init__(**kwargs)
             
         #network object
         self.net = Network()
@@ -30,11 +32,11 @@ class StunServer(FloatLayout):
             self.net = None
 
         #logs
-
+        self.log = 'Log initialized'
 
         #visual gui
-        self.log = TextInput()
-        self.add_widget(self.log)
+        #self.log = TextInput()
+        #self.add_widget(self.log)
 
         #informar al server principal el ip de este servidor stun ... 
         Request(action='http://www.orgboat.com/netget/ngaddstunserver.php', 
@@ -43,7 +45,32 @@ class StunServer(FloatLayout):
                 callback=self.res_addstun)
                 
         #enviar cada cierto tiempo nuestro update request ping
-        Clock.schedule_interval(self.updatealive, 30)
+        TimerInterval(self.updatealive, 30)
+        
+        self.menu()
+        
+    def menu(self):
+        while True:
+            print '''
+                    Selecciona una opcion:
+                    
+                    1. Ver log
+                    2. Informacion de conexion
+                    3. Solicitudes atendidas
+                    4. Reiniciar conexion
+                    5. Salir
+                    '''
+                    
+            opc = raw_input()
+            
+            print opc
+            
+            if opc == '1':
+                print self.log
+            elif opc == '5':
+                self.net.shutdown_network()
+                return
+        
         
     def updatealive(self, dt):
         
@@ -63,7 +90,9 @@ class StunServer(FloatLayout):
         data = json.loads(datajson)
 
         if data['msg'] == 'stun_request':
-            self.log.text += 'Solving public IP for %s\n' % str(addr)
+            slog =  'Solving public IP for %s\n' % str(addr)
+            
+            self.log += slog
             
             #data to send
             tosend = json.dumps({'msg':'your_public_address', 'data':addr})
@@ -74,6 +103,8 @@ class StunServer(FloatLayout):
         self.net.network_shutdown()
 
 if __name__ == '__main__':
-    from kivy.base import runTouchApp
+    #from kivy.base import runTouchApp
 
-    runTouchApp(StunServer() )
+    #runTouchApp(StunServer() )
+    
+    StunServer()
