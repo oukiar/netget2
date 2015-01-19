@@ -63,7 +63,7 @@ class StunServer:
                     
             opc = raw_input()
             
-            print opc
+            print "Ejecutando opcion: ", opc
             
             if opc == '1':
                 print self.log
