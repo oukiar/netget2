@@ -72,7 +72,7 @@ class StunServer:
                 return
         
         
-    def updatealive(self, dt):
+    def updatealive(self, dt=None):
         
         Request(action='http://www.orgboat.com/netget/ngpingstunalive.php', 
                 data={}, 
