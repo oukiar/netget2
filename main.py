@@ -522,13 +522,15 @@ class NetgetUI(FloatLayout):
         
     def get_handshakerequests(self, dt):
 
-        print 'Obtaining holepunch requests from main server'
+        print 'GET HANDSHAKE REQUESTS'
 
         Request(action='http://www.orgboat.com/netget/nghandshakerequests.php', 
                 data={'usrID':self.usrID}, 
                 callback=self.res_get_handshakerequests)
         
     def res_get_handshakerequests(self, response):
+    
+        print 'GET HANDSHAKE REQUESTS RESPONSE:', response
     
         data = json.loads(response)
     
