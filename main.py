@@ -667,7 +667,7 @@ class NetgetUI(FloatLayout):
 
             for ip in ips:
 
-                addr = (ip[0], int(ip[1]))
+                addr = (ip['ip'], int(ip['port']))
 
                 Clock.schedule_interval(partial(self.holepunch_p2p, addr, contactID ), 1)
 
