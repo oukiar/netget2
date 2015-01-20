@@ -540,9 +540,9 @@ class NetgetUI(FloatLayout):
             for contactID in data:
                 print 'Initiating holepunch with the peer ', (contactID, data[contactID])
                 
-                for ip in data[contactID]:
+                for pair in data[contactID]:
                 
-                    addr = (ip[0], int(ip[1]))
+                    addr = (pair['ip'], int(pair['port']))
                 
                     #init a wide (full) holepunch to this ip host searching the contactID loged
                     #self.wide_holepuch(ip, contactID)
