@@ -667,9 +667,9 @@ class NetgetUI(FloatLayout):
 
             for ip in ips:
 
-                self.wide_holepuch(ip, contactID)
+                addr = (ip['ip'], int(ip['port']))
 
-                #Clock.schedule_interval(partial(self.holepunch_p2p, str(ip) ), 1)
+                Clock.schedule_interval(partial(self.holepunch_p2p, addr ), 1)
 
 
     def on_search(self, w):
