@@ -1127,6 +1127,9 @@ class Netget(FloatLayout):
                 self.net.send(addr, tosend)  
                 
         elif data_dict["msg"] == 'holepunch':
+            
+            print "Hole punch received from: ", addr
+            
             #check if this holepunch is for us
             if data_dict['data'] == self.netgetui.usrID:
             
