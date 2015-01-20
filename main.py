@@ -540,11 +540,13 @@ class NetgetUI(FloatLayout):
                 
                 for ip in data[contactID]:
                 
+                    addr = (ip[0], int(ip[1]))
+                
                     #init a wide (full) holepunch to this ip host searching the contactID loged
                     #self.wide_holepuch(ip, contactID)
 
                     #print 'Configured holepunch to contactID: ', (i, data[i])
-                    Clock.schedule_interval(partial(self.holepunch_p2p, ip, contactID), 1)
+                    Clock.schedule_interval(partial(self.holepunch_p2p, addr, contactID), 1)
     
     def holepunch_p2p(self, addr, contactID, dt):
         print 'Maintaining hole puch with ', addr
