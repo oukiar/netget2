@@ -93,7 +93,7 @@ class SignUp(Popup):
     '''
     def __init__(self, **kwargs):
         
-        super(SignUp, self).__init__(title='Sign Up', size_hint=(None,None), size=(400,300), **kwargs)
+        super(SignUp, self).__init__(title='Sign Up', size_hint=(None,None), size=(400,320), **kwargs)
         
         self.layout = BoxLayout(padding=30, spacing=5, orientation='vertical')
         
@@ -751,8 +751,19 @@ class NetgetUI(FloatLayout):
             self.devID = '-1'
         
     def save_devID(self):
+        #save on a file
         with open(os.path.join(self.homedir, 'devID') , 'w+') as f:
             f.write(self.devID) 
+        
+        #save on the server
+        data = {
+                'ip':ip,
+                'port':port, 
+                'devID':self.netgetui.devID
+                }
+        
+        Request(action='http://www.orgboat.com/netget/ngsavepublicip.php', data=data, callback=self.res_savepublicaddr)
+                
         
 class NetgetMap(AnchorLayout):
     def __init__(self, **kwargs):
@@ -1143,18 +1154,19 @@ class Netget(FloatLayout):
             
             self.txt_publicaddress.text = "Public IP: %s\nPublic port: %s" % (ip, str(port))
             
-            #informar al server principal sobre nuestro puerto UDP publico (resuelto gracias al servidor stun)
+            #verificar que haya sesion iniciada .... -1 significa sin sesion iniciada
+            if self.netgetui.usrID != "-1":
             
-            data = {
-                    'ip':ip,
-                    'port':port, 
-                    'devID':self.netgetui.devID
-                    }
-            
-            Request(action='http://www.orgboat.com/netget/ngsavepublicip.php', data=data, callback=self.res_savepublicaddr)
-            
-            #tosend = json.dumps({'msg':'ping_ack', 'data':None})
-            #self.net.send(addr, tosend)
+                #informar al server principal sobre nuestro puerto UDP publico (resuelto gracias al servidor stun)
+                
+                data = {
+                        'ip':ip,
+                        'port':port, 
+                        'devID':self.netgetui.devID
+                        }
+                
+                Request(action='http://www.orgboat.com/netget/ngsavepublicip.php', data=data, callback=self.res_savepublicaddr)
+                
             
     def res_savepublicaddr(self, response):
         print response
