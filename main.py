@@ -491,6 +491,12 @@ class NetgetUI(FloatLayout):
         #contact menu
         self.contactmenu = ContactMenu()
         
+    def stop_requests(self):
+        Clock.unschedule(self.get_friendrequests)
+        Clock.unschedule(self.ping_alive)
+        Clock.unschedule(self.get_contacts)
+        Clock.unschedule(self.get_handshakerequests)
+        Clock.unschedule(self.holepunch_p2p)
         
     def get_friendrequests(self, dt):
         
@@ -757,19 +763,20 @@ class NetgetUI(FloatLayout):
         
         #save on the server
         data = {
-                'ip':ip,
-                'port':port, 
-                'devID':self.netgetui.devID
+                'ip':self.ip,
+                'port':self.port, 
+                'devID':self.devID
                 }
         
         Request(action='http://www.orgboat.com/netget/ngsavepublicip.php', data=data, callback=self.res_savepublicaddr)
-                
+  
+    def res_savepublicaddr(self, response):
+        print response
         
 class NetgetMap(AnchorLayout):
     def __init__(self, **kwargs):
         
         super(NetgetMap, self).__init__(**kwargs)
-        
         
         self.img_netgetmap = Image(source='network_64x64.png', size_hint=(None, None), size=(64,64), allow_stretch=True)
         self.add_widget(self.img_netgetmap)
@@ -782,6 +789,9 @@ class Netget(FloatLayout):
         
         #diccionario con los dispositivos con los que tenemos conexion directa via LAN p2p
         self.neardevices = {}
+        
+        self.ip = None
+        self.port = None
         
         self.state = "logedout"
         
@@ -862,15 +872,26 @@ class Netget(FloatLayout):
     def on_logout(self, w):
         print 'Loging out'
         
-        
         self.state = "logedout"
         
         self.netgetui.profile.menu.dismiss()
+        self.netgetui.stop_requests()
         self.remove_widget(self.netgetui)
         
         if self.login not in self.children:
             print "Readding login widget"
             self.add_widget(self.login)
+            
+        #RESET ALL LOGIN AND SIGNUP CONTROLS
+        self.login.txt_username.text = "Username"
+        self.login.txt_password.text = "Password"
+        
+        if hasattr(self, 'signup'):
+        
+            self.signup.email.text = 'Email'
+            self.signup.username = 'Username'
+            self.signup.password = 'Password'
+            self.signup.rpassword = 'Retype Password'
         
         fade_in(self.login)
         
@@ -941,6 +962,8 @@ class Netget(FloatLayout):
             
             self.netgetui.usrID = usrID
             self.netgetui.usrNickName = usrNickName
+            self.netgetui.ip = self.ip
+            self.netgetui.port = self.port
             
             Clock.schedule_once(self.netgetui.get_contacts, 1)
             
@@ -1014,7 +1037,8 @@ class Netget(FloatLayout):
     def on_closed_signup(self, w):
         if self.state != "signinup":
             
-            self.add_widget(self.login)
+            #self.add_widget(self.login)
+            pass
             
     def on_signup(self, w):
         
@@ -1086,7 +1110,8 @@ class Netget(FloatLayout):
             
             self.netgetui.usrID = usrID
             self.netgetui.usrNickName = usrNickName
-            
+            self.netgetui.ip = self.ip
+            self.netgetui.port = self.port
             
             self.add_widget(self.netgetui)
             fade_in(self.netgetui)
@@ -1150,18 +1175,21 @@ class Netget(FloatLayout):
         elif data_dict["msg"] == 'your_public_address':
             
             #show my public data
-            ip, port = data_dict["data"]
+            self.ip, self.port = data_dict["data"]
             
-            self.txt_publicaddress.text = "Public IP: %s\nPublic port: %s" % (ip, str(port))
+            self.txt_publicaddress.text = "Public IP: %s\nPublic port: %s" % (self.ip, str(self.port))
             
             #verificar que haya sesion iniciada .... -1 significa sin sesion iniciada
             if self.netgetui.usrID != "-1":
+                
+                self.netgetui.ip = self.ip
+                self.netgetui.port = self.port
             
                 #informar al server principal sobre nuestro puerto UDP publico (resuelto gracias al servidor stun)
                 
                 data = {
-                        'ip':ip,
-                        'port':port, 
+                        'ip':self.ip,
+                        'port':self.port, 
                         'devID':self.netgetui.devID
                         }
                 
