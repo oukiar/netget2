@@ -4,7 +4,7 @@
 Netget p2p networking for anything
 
 
-Neurons Art & Technology 2012-2014 All rights reserved.
+Neurons Art & Technology 2012-2015 All rights reserved.
 '''
 
 #imports of kivy stuff
