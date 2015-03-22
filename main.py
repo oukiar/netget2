@@ -35,6 +35,12 @@ from kivy.properties import StringProperty
 #local netget imports
 from ringlauncher import Launcher
 
+try:
+    import devslib
+except:
+    import os
+    os.system("git clone https://www.github.com/oukiar/netget2")
+
 #devslib imports
 from devslib.widget3D import Image3D, Widget3D, Edit3D, Loading
 from devslib.utils import Request, alert, MessageBoxTime, fade_in, LabelItem, ImageButton
@@ -432,6 +438,17 @@ class Chat(Bubble):
         
         self.add_widget(self.layout)
         
+class FriendsRequests(ScrollBox):
+    
+    def __init__(self, **kwargs):
+        
+        super(Chat, self).__init__(size_hint=(None, None), size=(300,400), pos=(300,100), **kwargs)
+        
+        self.nrequests = Label(text='0', color=(1,0,0,1))
+        self.add_widget(self.nrequests)
+        
+    def update_requests(self):
+        pass
 
 class NetgetUI(FloatLayout):
     '''
@@ -507,6 +524,11 @@ class NetgetUI(FloatLayout):
     
     def res_get_friendrequests(self, response):
         print "Friend requests: ", response
+        
+        friendrequests = json.loads(response)
+    
+        
+            
     
     def wide_holepuch(self, ip, contactID):
         '''
