@@ -1,50 +1,54 @@
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.codeinput import CodeInput
+from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.extras.highlight import KivyLexer
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ObjectProperty
 from kivy.uix.filechooser import FileChooserListView
+from kivy.clock import Clock
 
 import os
 
 class Editor(BoxLayout):
     
-    filename = StringProperty("")
-    
-    def __init__(self, **kwargs):
-        self.codeinput = CodeInput()
+    filename = StringProperty()
+    codeinput = ObjectProperty()
+
+    def openfile(self):
+        print "Opening ", self.filename
+        if self.codeinput == None or len(self.filename) == 0:
+            return
+        if not os.path.exists(self.filename):
+            return
         
-        super(Editor, self).__init__(orientation='vertical', **kwargs)
-        
-        self.add_widget(self.codeinput)
-        
-        self.buttons = BoxLayout(size_hint_y=None, height=50)
-        self.buttons.add_widget(Button(text='Save', on_press=self.on_save))
-        self.buttons.add_widget(Button(text='Run', on_press=self.on_run))
-        self.buttons.add_widget(Button(text='Open', on_press=self.on_open))
-        self.buttons.add_widget(Button(text='Close'))
-        
-        self.add_widget(self.buttons)
-        
-    def on_filename(self, w, val):
-        with open(val) as f:
+        with open(self.filename) as f:
             self.codeinput.text = f.read()
-            
-    def on_save(self, w):
+
+        print "opened"
+    
+    def on_save(self):
         with open(val, 'w+') as f:
              f.write(self.codeinput.text)
              
-    def on_run(self, w):
+    def on_run(self):
         os.system("python " + self.filename)
         
-    def on_open(self, w):
+    def on_open(self):
         self.files = FileChooserListView(on_submit=self.fileselected)
         self.add_widget(self.files)
         
     def fileselected(self, w, selection, touch):
         print "Selected: ", selection
+        self.filename = selection[0]
 
 if __name__ == '__main__':
-    from kivy.base import runTouchApp
+    from kivy.app import App
+    
+    class EditorApp(App):
+        def build(self):
+            editor = Editor()
+            editor.filename = "editor.py"
+            return editor
 
-    runTouchApp(Editor(filename='editor.py'))
+    EditorApp().run()
