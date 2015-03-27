@@ -10,10 +10,26 @@ from kivy.clock import Clock
 
 import os
 
+'''
+Widgets permitidos
+
+BoxLayout
+Label
+Button
+Select
+Tab
+TabItem
+
+- Planear interfaz
+    - Seccion para elejir widget a insertar
+    
+
+'''
+
 class TextCode(CodeInput):
     pass
 
-class Editor(BoxLayout):
+class Designer(BoxLayout):
     
     filename = StringProperty()
     codefiles = ObjectProperty()
@@ -53,10 +69,9 @@ class Editor(BoxLayout):
 if __name__ == '__main__':
     from kivy.app import App
     
-    class EditorApp(App):
+    class DesignerApp(App):
         def build(self):
-            editor = Editor()
-            editor.filename = "editor.py"
-            return editor
+            designer = Designer()
+            return designer
 
-    EditorApp().run()
+    DesignerApp().run()

@@ -1,0 +1,22 @@
+#:kivy 1.8
+
+
+<Designer>:
+    orientation: "vertical"
+
+    BoxLayout:
+        Button:
+            text: "Widgets"
+            on_press: root.on_save()
+        Button:
+            text: "Deploy"
+            on_press: root.on_run()
+        Button:
+            text: "Configuration"
+            on_press: root.on_open()
+        Button:
+            text: "Cloud"
+            on_press: root.on_close()
+        Button:
+            text: "Project"
+            on_press: root.on_new()
