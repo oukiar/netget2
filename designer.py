@@ -10,6 +10,8 @@ from kivy.clock import Clock
 
 import os
 
+from editor import Editor
+
 '''
 Widgets permitidos
 
@@ -26,27 +28,25 @@ TabItem
 
 '''
 
-class TextCode(CodeInput):
-    pass
 
 class Designer(BoxLayout):
     
     filename = StringProperty()
-    codefiles = ObjectProperty()
+    code = ObjectProperty()
 
     def openfile(self):
         
-        if self.codeinput == None or len(self.filename) == 0:
+        if self.code == None or len(self.filename) == 0:
             return
         if not os.path.exists(self.filename):
             return
         
         with open(self.filename) as f:
-            self.codeinput.text = f.read()
+            self.code.text = f.read()
     
     def on_save(self):
         with open(self.filename, 'w+') as f:
-             f.write(self.codeinput.text)
+             f.write(self.code.text)
              
     def on_run(self):
         os.system("python " + self.filename)
@@ -65,6 +65,35 @@ class Designer(BoxLayout):
         print "Selected: ", selection
         self.filename = selection[0]
         self.remove_widget(self.files)
+        
+    def do_boxlayout(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "BoxLayout:")
+        
+    def do_label(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "Label:")
+        
+    def do_button(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "Button:")
+        
+    def do_edit(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "Edit:")
+        
+    def do_select(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "Select:")
+        
+    def do_tab(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "TabbedPanel:")
+        
+    def do_tabitem(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "TabbedPanelItem:")
+        
+    def get_tabstr(self):
+        tabstr = ''
+        for i in range(0, int(self.code.ntabs.number.text)):
+            for i in range(0, 4):
+                tabstr += ' '
+            
+        return tabstr
 
 if __name__ == '__main__':
     from kivy.app import App

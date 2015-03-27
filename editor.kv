@@ -4,31 +4,32 @@ TextCode:
 
 <Editor>:
     orientation: "vertical"
-    on_filename: self.openfile()
     codeinput:codeinput
-	TabbedPanel:
-        ScrollView:
-            CodeInput:
-                id: codeinput
-                text: ""
-                size_hint: 1, None
-                height: max( (len(self._lines)+1) * self.line_height, self.parent.height)
+    ntabs:ntabs
+    ScrollView:
+        CodeInput:
+            id: codeinput
+            text: ""
+            size_hint: 1, None
+            height: max( (len(self._lines)+1) * self.line_height, self.parent.height)
 
     BoxLayout:
         size_hint_y: None
         height: 100
         Button:
-            text: "Save"
-            on_press: root.on_save()
+            text: "Delete"
+            on_press: root.on_delete()
         Button:
-            text: "Run"
-            on_press: root.on_run()
+            text: "Tab insert"
+            on_press: root.on_tab()
+        Number:
+            id: ntabs
         Button:
             text: "Open"
             on_press: root.on_open()
         Button:
-            text: "Close"
-            on_press: root.on_close()
+            text: "Run"
+            on_press: root.on_run()
         Button:
-            text: "New"
-            on_press: root.on_new()
+            text: "Save"
+            on_press: root.on_save()

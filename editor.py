@@ -16,17 +16,31 @@ class TextCode(CodeInput):
 class Editor(BoxLayout):
     
     filename = StringProperty()
-    codefiles = ObjectProperty()
+    action = StringProperty()
+    codeinput = ObjectProperty()
+    ntabs = ObjectProperty()
+    
+    def on_filename(self, w, val):
+        print 'New filename to ', val
+        self.openfile()
 
     def openfile(self):
         
-        if self.codeinput == None or len(self.filename) == 0:
+        if len(self.filename) == 0:
+            print "Zero filename"
+            return
+        if self.codeinput == None:
+            print "Code input none: ", self.filename
+            Clock.schedule_once(self.initload, .1)
             return
         if not os.path.exists(self.filename):
             return
         
         with open(self.filename) as f:
             self.codeinput.text = f.read()
+    
+    def initload(self, dt):
+        self.openfile()
     
     def on_save(self):
         with open(self.filename, 'w+') as f:
@@ -45,6 +59,9 @@ class Editor(BoxLayout):
         self.files = FileChooserListView(on_submit=self.fileselected, path='.')
         self.add_widget(self.files)
         
+    def on_tab(self):
+        self.codeinput.insert_text('\t')
+        
     def fileselected(self, w, selection, touch):
         print "Selected: ", selection
         self.filename = selection[0]
@@ -55,8 +72,8 @@ if __name__ == '__main__':
     
     class EditorApp(App):
         def build(self):
-            editor = Editor()
-            editor.filename = "editor.py"
+            editor = Editor(filename = "editor.py")
+            #editor.filename = "editor.py"
             return editor
 
     EditorApp().run()
