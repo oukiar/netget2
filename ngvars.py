@@ -16,19 +16,40 @@ Se usara la solucion de php como backend inspirada en parse.
 
 '''
 
+from kivy.properties import StringProperty
+
 class NGVar(Widget):
-    pass
+    name = StringProperty()
+    data = StringProperty()
+    
+    def save(self, **kwargs):
+        
     
 class NGFactory(widget):
-    def Create(self):
-        pass
+    
+    serverurl = StringProperty()
+
+    def Create(self, name, **kwargs):
+        print kwargs
+        return NGVar(name=name)
+
     def Search(self):
         pass
-    def Save(self):
-        pass
+    def Save(self, ngvar):
+    ngvar.save()
+
     def Insert(self):
-        pass
+    pass
     def Update(self):
-        pass
+    pass
     def Delete(self):
-        pass
+    pass
+
+if __name__ == '__main__':
+    
+    creator = NGFactory(serverurl='http://www.devsinc.com.mx/ngcloud/')
+    ngvar = creator.Create('Users')
+    
+    ngvar.save(Name="Oscar Alcantara", Email="oukiar@gmail.com"})
+    
+    
