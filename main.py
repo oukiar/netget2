@@ -39,7 +39,7 @@ try:
     import devslib
 except:
     import os
-    os.system("git clone https://www.github.com/oukiar/netget2")
+    os.system("git clone https://www.github.com/oukiar/devslib")
 
 #devslib imports
 from devslib.widget3D import Image3D, Widget3D, Edit3D, Loading
@@ -64,6 +64,11 @@ http://labs.opendns.com/2013/03/06/announcing-sodium-a-new-cryptographic-library
 
     
 class TextBox(TextInput):
+    '''
+    FIXME:
+        Checar si es correcto seguir usando esta solucion, pues al
+        parecer el TAB support es estable en la development version.
+    '''
     def __init__(self, **kwargs):
         super(TextBox, self).__init__(**kwargs)
         
