@@ -4,13 +4,17 @@ from kivy.uix.codeinput import CodeInput
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.extras.highlight import KivyLexer
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import StringProperty, ObjectProperty, BooleanProperty
 from kivy.uix.filechooser import FileChooserListView
 from kivy.clock import Clock
+from kivy.uix.image import Image
+from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 
 import os
 
 from editor import Editor
+
 
 '''
 Widgets permitidos
@@ -28,6 +32,18 @@ TabItem
 
 '''
 
+class Editable(Widget):
+    editing = BooleanProperty()
+    img_target = ObjectProperty()
+    
+    def on_editing(self, w, val):
+        if val:
+            self.img_target.opacity = 1
+        else:
+            self.img_target.opacity = 0
+        
+class Text(Label, Editable):
+    pass
 
 class Designer(BoxLayout):
     

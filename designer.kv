@@ -1,10 +1,10 @@
 #:kivy 1.8
 
 #:import ImageButton devslib.utils
+#:import ScrollBox devslib.scrollbox
+
 #:include editor.kv
 
-<Edit@TextInput>:
-    write_tab: False
 
 
 <Number@BoxLayout>:
@@ -20,6 +20,15 @@
         text: '>'
         on_press: root.number.text = str(int(root.number.text)+1)
 
+<Editable>:
+    img_target:img_target
+    editing: False
+    
+    Image:
+        id: img_target
+        source: "target.png"
+        center: root.center
+
 <Designer>:
     orientation: "vertical"
     code:code
@@ -34,7 +43,6 @@
                     orientation: 'vertical'
                     size_hint: (None, None)
                     size: (100,400)
-                    width: 100
                     Button:
                         text: "BoxLayout"
                         on_press: root.do_boxlayout()
@@ -56,6 +64,12 @@
                     Button:
                         text: "TabItem"
                         on_press: root.do_tabitem()
+                    Button:
+                        text: "Image"
+                        on_press: root.do_image()
+                    Button:
+                        text: "Camera"
+                        on_press: root.do_camera()
     
                         
                 TabbedPanel:
@@ -70,6 +84,32 @@
                         
                     TabbedPanelItem:
                         text: 'View'
+                        
+                        BoxLayout:
+                            padding: 20
+                            AnchorLayout:
+                                anchor_y: "top"
+                                Text:
+                                    text: "Put here your user interface"
+                                    size_hint_y: None
+                            BoxLayout:
+                                orientation: 'vertical'
+                                size_hint_x: None
+                                width: 200
+                                TabbedPanel:
+                                    TabbedPanelItem:
+                                        text: 'Properties'
+                                    
+                                        ScrollBox:
+                                            Label:
+                                                text: "List of propeties here"
+                                                
+                                    TabbedPanelItem:
+                                        text: 'Events'
+                                    
+                                        ScrollBox:
+                                            Label:
+                                                text: "List of events here"
             
         TabbedPanelItem:
             text: "Cloud"
