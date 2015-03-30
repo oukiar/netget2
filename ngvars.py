@@ -13,43 +13,84 @@ Neurons art & technology 2012-2015
 Acerca de la sincronizacion inicial.
 
 Se usara la solucion de php como backend inspirada en parse.
-
 '''
 
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty
+from kivy.uix.widget import Widget
+import json
+
+from devslib.utils import Request
 
 class NGVar(Widget):
-    name = StringProperty()
-    data = StringProperty()
+    varname = StringProperty()
+    vartype = StringProperty('Universal')
+    data = StringProperty() #in json format
+    objectId = NumericProperty(-1)
+    appId = StringProperty()
+    appKey = StringProperty()
     
+        
     def save(self, **kwargs):
         
+        datadict = kwargs.copy()
+        datadict.update({'objectId':self.objectId,
+                                'appId':self.appId,
+                                'appkey':self.appKey,
+                                'varname':self.varname
+                                })
+        
+        #enviar peticion de creacion ... php backend por ahora
+        Request(action='http://www.devsinc.com.mx/ngcloud/extends.php', 
+                data=datadict, 
+                callback=self.res_save)
+        
+    def res_save(self, response):
+        print response
     
-class NGFactory(widget):
+    def get(self, fields):
+        pass
+        
+    def query(self, **kwargs):
+        pass
+        
+        
+class NGFile(Widget):
+    '''
+    NGFile representa un archivo netget que actualiza su contenido
+    automaticamente en cloud del app y sesion donde sea creado.
+    '''
+    pass
+    
+class NGFactory(Widget):
     
     serverurl = StringProperty()
 
-    def Create(self, name, **kwargs):
-        print kwargs
-        return NGVar(name=name)
+    def Extends(self, name, **kwargs):
+        return NGVar(varname=name, **kwargs)
 
     def Search(self):
         pass
+        
     def Save(self, ngvar):
-    ngvar.save()
+        ngvar.save()
 
     def Insert(self):
-    pass
+        pass
+        
     def Update(self):
-    pass
+        pass
+        
     def Delete(self):
-    pass
+        pass
 
 if __name__ == '__main__':
     
-    creator = NGFactory(serverurl='http://www.devsinc.com.mx/ngcloud/')
-    ngvar = creator.Create('Users')
+    factory = NGFactory(serverurl='http://www.devsinc.com.mx/ngcloud/')
+    ngvar = factory.Extends('Users')
     
-    ngvar.save(Name="Oscar Alcantara", Email="oukiar@gmail.com"})
+    ngvar.save(Name="Nat synapses", Email="natsynapses@gmail.com")
     
+    from kivy.base import runTouchApp
+    
+    runTouchApp(ngvar)
     
