@@ -68,7 +68,7 @@ class NGFactory(Widget):
     def Extends(self, name, **kwargs):
         return NGVar(varname=name, **kwargs)
 
-    def Search(self):
+    def Search(self, **kwargs):
         pass
         
     def Save(self, ngvar):
