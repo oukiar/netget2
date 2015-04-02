@@ -1226,6 +1226,9 @@ class Netget(FloatLayout):
     def res_savepublicaddr(self, response):
         print response
         
+class NetgetLogin(AnchorLayout):
+    pass
+        
 from webview import Wv
             
 class NetgetApp(App):

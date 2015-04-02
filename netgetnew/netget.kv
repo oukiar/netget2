@@ -1,0 +1,94 @@
+
+
+
+<NetgetLogin>:
+    anchor_x: "center"
+    anchor_y: "center"
+    
+    BoxLayout:
+        size_hint: (None,None)
+        size: (400,400)
+        orientation: "vertical"
+        spacing: 10
+        Label:
+            text: 'Tour    |    [ref=signup]Sign up[/ref]    |    Contact'
+            markup: True
+            on_ref_press: app.root.show_signup()
+        Label:
+            text: 'Netget'
+            font_size: 36
+        TextInput:
+            text: 'Username'
+            size_hint_y: None
+            height: 40
+        TextInput:
+            text: 'Password'
+            size_hint_y: None
+            height: 40
+            password: True
+            multiline: False
+        Button:
+            text: "Login"
+            on_press: app.root.do_login()
+        BoxLayout:
+            CheckBox:
+                size_hint_x: None
+                width: 30
+            Label:
+                text: "Remmember me"
+                
+<NetgetSignUp>:
+    anchor_x: "center"
+    anchor_y: "center"
+    size_hint: (None,None)
+    size: (400,400)
+    
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        
+        Label:
+            text: 'Netget signup'
+            font_size: 36
+        TextInput:
+            text: 'Email'
+            size_hint_y: None
+            height: 40
+        TextInput:
+            text: 'password'
+            size_hint_y: None
+            height: 40
+            password: True
+            multiline: False
+        TextInput:
+            text: 'password'
+            size_hint_y: None
+            height: 40
+            password: True
+            multiline: False
+        Button:
+            text: "Create account"
+            on_press: ap.root.do_signup()
+
+
+<NetgetGui>:
+    BoxLayout:
+
+<NetgetBase>:
+    login:login
+    Image:
+        source: 'backgrounds/Venecia.jpg'
+        allow_stretch: True
+        keep_ratio: False
+        opacity: .5
+
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "bottom"
+        
+        Label:
+            size_hint_y: None
+            text: 'Obtaining public address...'
+            
+    NetgetLogin:
+        id: login
