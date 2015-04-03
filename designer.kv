@@ -32,8 +32,86 @@
 <Designer>:
     orientation: "vertical"
     code:code
+    txt_newprojectname:txt_newprojectname
     TabbedPanel:
         do_default_tab: False
+        TabbedPanelItem:
+            text: "Home"
+            
+        TabbedPanelItem:
+            text: "Projects"
+            
+            TabbedPanel:
+                do_default_tab: False
+                
+                TabbedPanelItem:
+                    text: "Recent"
+                    BoxLayout:
+                        orientation: "vertical"
+                        padding: 40
+                        spacing: 10
+                        BoxLayout:
+                            size_hint_y: None
+                            height: 60
+                            Label:
+                                font_size: 32
+                                text: "New project"
+                            TextInput:
+                                id: txt_newprojectname
+                                font_size: 32
+                                multiline: False
+                            Button:
+                                size_hint_x: None
+                                width: 80
+                                text: "Create"
+                                on_press: root.create_project()
+                              
+                        TabbedPanel:
+                            do_default_tab: False
+                            TabbedPanelItem:
+                                size_hint_x: None
+                                width: 300
+                                text: "Recent"
+                              
+                                BoxLayout:
+                                    orientation: "vertical"
+                                    spacing: 10
+                                    padding: 20
+                                    Button:
+                                        size_hint_y: None
+                                        height: 50
+                                        text: "Recent projects"
+                                          
+                                    ScrollBox:
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                        Label:
+                                            text: "netget"
+                                            
+                            TabbedPanelItem:
+                                text: "Popular"
+                                ScrollView:
+                                    ListView:
+                                        item_strings: ['netget2','ojbxpro','livesa2','selfiebox','clonator']
+                                
+                            TabbedPanelItem:
+                                text: "Search"
+                                
+                TabbedPanelItem:
+                    text: "Runtime"
+                    Label:
+                        text: "There is not App running"
+        
         TabbedPanelItem:
             text: 'Widgets'
             
@@ -44,7 +122,10 @@
                     size_hint: (None, None)
                     size: (100,400)
                     Button:
-                        text: "BoxLayout"
+                        text: "BoxLayout Horizontal"
+                        on_press: root.do_boxlayout()
+                    Button:
+                        text: "BoxLayout Vertical"
                         on_press: root.do_boxlayout()
                     Button:
                         text: "Label"
@@ -64,6 +145,9 @@
                     Button:
                         text: "TabItem"
                         on_press: root.do_tabitem()
+                    Button:
+                        text: "ListBox"
+                        on_press: root.do_listbox()
                     Button:
                         text: "Image"
                         on_press: root.do_image()
@@ -90,16 +174,18 @@
                         
                         BoxLayout:
                             padding: 20
-                            AnchorLayout:
-                                anchor_y: "top"
-                                Text:
-                                    text: "Put here your user interface"
-                                    size_hint_y: None
+                            Popup:
+                                AnchorLayout:
+                                    anchor_y: "top"
+                                    Text:
+                                        text: "Put here your user interface"
+                                        size_hint_y: None
                             BoxLayout:
                                 orientation: 'vertical'
                                 size_hint_x: None
                                 width: 200
                                 TabbedPanel:
+                                    do_default_tab: False
                                     TabbedPanelItem:
                                         text: 'Properties'
                                     

@@ -12,6 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 
 import os
+from string import replace
 
 from editor import Editor
 
@@ -49,6 +50,8 @@ class Designer(BoxLayout):
     
     filename = StringProperty()
     code = ObjectProperty()
+    
+    txt_newprojectname = ObjectProperty()
 
     def openfile(self):
         
@@ -103,6 +106,9 @@ class Designer(BoxLayout):
     def do_tabitem(self):
         self.code.codeinput.insert_text(self.get_tabstr() + "TabbedPanelItem:")
         
+    def do_listbox(self):
+        self.code.codeinput.insert_text(self.get_tabstr() + "ListView:")
+        
     def get_tabstr(self):
         tabstr = ''
         for i in range(0, int(self.code.ntabs.number.text)):
@@ -110,6 +116,23 @@ class Designer(BoxLayout):
                 tabstr += ' '
             
         return tabstr
+        
+    def create_project(self):
+        print "Creating project: " + self.txt_newprojectname.text
+        
+        projectpath = os.path.join('projects', self.txt_newprojectname.text)
+        
+        #create the directory of the new project
+        os.mkdir( projectpath )
+
+        #create helloworld application from the templates directory
+        with open(os.path.join(projectpath, self.txt_newprojectname.text + '.py'), 'w+') as fnew:
+            with open(os.path.join('templates', 'helloworld', 'helloworld.py') ) as fhello:
+                fnew.write(replace(fhello.read(), 'HelloWorld', self.txt_newprojectname.text))
+                
+        with open(os.path.join(projectpath, self.txt_newprojectname.text + '.kv'), 'w+') as fnew:
+            with open(os.path.join('templates', 'helloworld', 'helloworld.kv') ) as fhello:
+                fnew.write(replace(fhello.read(), 'HelloWorld', self.txt_newprojectname.text))
 
 if __name__ == '__main__':
     from kivy.app import App
