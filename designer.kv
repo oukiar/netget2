@@ -45,26 +45,30 @@
                 do_default_tab: False
                 
                 TabbedPanelItem:
-                    text: "Recent"
+                    text: "Manager"
                     BoxLayout:
                         orientation: "vertical"
                         padding: 40
                         spacing: 10
-                        BoxLayout:
+                        AnchorLayout:
+                            anchor_x: 'right'
                             size_hint_y: None
                             height: 60
-                            Label:
-                                font_size: 32
-                                text: "New project"
-                            TextInput:
-                                id: txt_newprojectname
-                                font_size: 32
-                                multiline: False
-                            Button:
+                            BoxLayout:
                                 size_hint_x: None
-                                width: 80
-                                text: "Create"
-                                on_press: root.create_project()
+                                width: 500
+                                Label:
+                                    font_size: 32
+                                    text: "New project"
+                                TextInput:
+                                    id: txt_newprojectname
+                                    font_size: 32
+                                    multiline: False
+                                Button:
+                                    size_hint_x: None
+                                    width: 80
+                                    text: "Create"
+                                    on_press: root.create_project()
                               
                         TabbedPanel:
                             do_default_tab: False
