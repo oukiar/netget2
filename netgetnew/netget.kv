@@ -42,7 +42,12 @@
     anchor_y: "center"
     size_hint: (None,None)
     size: (400,400)
-    
+    title: "New account"
+
+    txt_user:txt_user
+    txt_pass:txt_pass
+    txt_rpass:txt_rpass
+
     BoxLayout:
         orientation: "vertical"
         spacing: 10
@@ -51,16 +56,19 @@
             text: 'Netget signup'
             font_size: 36
         TextInput:
+            id: txt_user
             text: 'Email'
             size_hint_y: None
             height: 40
         TextInput:
+            id: txt_pass
             text: 'password'
             size_hint_y: None
             height: 40
             password: True
             multiline: False
         TextInput:
+            id: txt_rpass
             text: 'password'
             size_hint_y: None
             height: 40
@@ -68,7 +76,7 @@
             multiline: False
         Button:
             text: "Create account"
-            on_press: ap.root.do_signup()
+            on_press: app.root.do_signup()
 
 
 <NetgetGui>:

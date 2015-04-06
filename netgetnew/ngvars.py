@@ -15,6 +15,14 @@ Acerca de la sincronizacion inicial.
 Se usara la solucion de php como backend inspirada en parse.
 '''
 
+'''
+
+Seguridad: Algoritmo de encriptacion
+    https://github.com/jedisct1/libsodium
+    
+    
+'''
+
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.widget import Widget
 import json
