@@ -5,6 +5,10 @@ nivel cloud, usando la tecnologia disponible de sincronizacion.
 
 El entorno de sesion y accesso a los datos es realizado on-the-fly.
 
+Operaciones:
+Extends o Create: Usado para crear o fabricar objetos de una determinada clase, pero con las bondades de Netget ngvars
+Query o Search: Usado para hacer busqueda en base a condiciones prefedinidas con las funciones constraints
+
 Neurons art & technology 2012-2015
 '''
 
@@ -40,6 +44,8 @@ class NGVar(Widget):
         
     def save(self, **kwargs):
         
+        callback = kwargs.pop('callback', self.res_save)
+        
         datadict = kwargs.copy()
         datadict.update({'objectId':self.objectId,
                                 'appId':self.appId,
@@ -50,7 +56,7 @@ class NGVar(Widget):
         #enviar peticion de creacion ... php backend por ahora
         Request(action='http://www.devsinc.com.mx/ngcloud/extends.php', 
                 data=datadict, 
-                callback=self.res_save)
+                callback=callback)
         
     def res_save(self, response):
         print response
@@ -72,6 +78,9 @@ class NGFile(Widget):
 class NGFactory(Widget):
     
     serverurl = StringProperty()
+    
+    def Connect(self):
+        pass
 
     def Extends(self, name, **kwargs):
         return NGVar(varname=name, **kwargs)
@@ -81,12 +90,6 @@ class NGFactory(Widget):
         
     def Save(self, ngvar):
         ngvar.save()
-
-    def Insert(self):
-        pass
-        
-    def Update(self):
-        pass
         
     def Delete(self):
         pass

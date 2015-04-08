@@ -8,6 +8,8 @@ $values = "";
 $tablename = $_POST["varname"];
 unset($_POST["varname"]);
 
+$newobj = {};
+
 //CREATE TABLE PART
 foreach($_POST as $key => $val)
 {
@@ -17,6 +19,8 @@ foreach($_POST as $key => $val)
         $fields2 .= ",";
         $values .= ",";
     }
+    
+    $newobj[$key] = val;
         
     if($key == "objectId")
     {
@@ -39,20 +43,20 @@ if($objectId == "-1")
     //try to create table
     if($mysqli->query( "CREATE TABLE $tablename($fields)" ) )
     {
-        echo "New,";
+        //Only for if you need to know if was created or not
+        ;
     }
-    else echo "Fail,";
 
     //INSERT THE NEW OBJECT
     $sql = "insert into $tablename($fields2) values($values)";
 
     if($mysqli->query( $sql ) )
     {
-        echo "Created";
+        echo json_encode($newobj);
     }
     else
     {
-        echo "Fail: $sql";
+        echo "Fail";
     }
 }
 else

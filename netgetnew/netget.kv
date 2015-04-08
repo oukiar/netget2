@@ -5,6 +5,9 @@
     anchor_x: "center"
     anchor_y: "center"
     
+    txt_user: txt_user
+    txt_pass: txt_pass
+    
     BoxLayout:
         size_hint: (None,None)
         size: (400,400)
@@ -18,10 +21,12 @@
             text: 'Netget'
             font_size: 36
         TextInput:
+            id: txt_user
             text: 'Username'
             size_hint_y: None
             height: 40
         TextInput:
+            id: txt_pass
             text: 'Password'
             size_hint_y: None
             height: 40
