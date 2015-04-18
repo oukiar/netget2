@@ -29,7 +29,7 @@ class NetgetBase(FloatLayout):
     
     def __init__(self, **kwargs):
         super(NetgetBase, self).__init__(**kwargs)
-        self.factory = NGFactory(serverurl='http://www.devsinc.com.mx/ngcloud/')
+        self.factory = NGFactory(serverurl='http://104.236.181.245/ngcloud/')
     
     def do_signup(self):
         print "Creating account"
@@ -72,13 +72,13 @@ class NetgetBase(FloatLayout):
     def do_login(self):
         print "Logining into netget network: "
         
-        query = self.factory.Search('NGUsers')
-        query.get(Username=self.login.txt_user.text, callback=self.res_login)
+        user = self.factory.Search('NGUsers')
+        user.get(Username=self.login.txt_user.text, callback=self.res_login)
         
-    def res_login(self, result):
-        print result
+    def res_login(self, resultvar):
+        print resultvar
         
-        self.user = json.loads(result)
+        self.user = json.loads(resultvar)
         
         #encrypt password from the login form
         hashpass = md5.new()

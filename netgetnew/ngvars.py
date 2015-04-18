@@ -40,6 +40,7 @@ class NGVar(Widget):
     objectId = NumericProperty(-1)
     appId = StringProperty()
     appKey = StringProperty()
+    serverUrl = StringProperty('http://104.236.181.245/ngcloud/')   #the digital ocean netget server
     
         
     def save(self, **kwargs):
@@ -61,8 +62,24 @@ class NGVar(Widget):
     def res_save(self, response):
         print response
     
-    def get(self, fields):
-        pass
+    def get(self, **kwargs):
+        
+        callback = kwargs.pop('callback', self.res_get)
+        
+        datadict = kwargs.copy()
+        datadict.update({'objectId':self.objectId,
+                                'appId':self.appId,
+                                'appkey':self.appKey,
+                                'varname':self.varname
+                                })
+        
+        #enviar peticion de creacion ... php backend por ahora
+        Request(action='http://www.devsinc.com.mx/ngcloud/select.php', 
+                data=datadict, 
+                callback=callback)
+                
+    def res_get(self, response):
+        print response
         
     def query(self, **kwargs):
         pass
@@ -83,10 +100,10 @@ class NGFactory(Widget):
         pass
 
     def Extends(self, name, **kwargs):
-        return NGVar(varname=name, **kwargs)
+        return NGVar(varname=name, serverUrl=self.serverurl, **kwargs)
 
-    def Search(self, **kwargs):
-        pass
+    def Search(self, name, **kwargs):
+        return NGVar(varname=name, **kwargs)
         
     def Save(self, ngvar):
         ngvar.save()
@@ -96,7 +113,7 @@ class NGFactory(Widget):
 
 if __name__ == '__main__':
     
-    factory = NGFactory(serverurl='http://www.devsinc.com.mx/ngcloud/')
+    factory = NGFactory()
     ngvar = factory.Extends('Users')
     
     ngvar.save(Name="Nat synapses", Email="natsynapses@gmail.com")
