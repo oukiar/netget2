@@ -2,18 +2,22 @@
 from kivy.uix.popup import Popup
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 
 from ngvars import NGFactory
 
 from devslib.widget3D import Loading
 
 import md5 #FIXME, USE THE LIBSODIUM HASH
+import json
 
 '''
 
 
 '''
+  
+class Msg(Popup):
+    message = StringProperty()
   
 class NetgetLogin(AnchorLayout):
     txt_user = ObjectProperty()
@@ -57,7 +61,7 @@ class NetgetBase(FloatLayout):
                 pass
                 
     def res_signup(self, result):
-        print result
+        print "Signup response: ", result
         
         if result == 'Fail':
             return
@@ -71,14 +75,24 @@ class NetgetBase(FloatLayout):
 
     def do_login(self):
         print "Logining into netget network: "
+                
+        self.loading = Loading(source='loading.png')
+        self.add_widget(self.loading)
         
-        user = self.factory.Search('NGUsers')
-        user.get(Username=self.login.txt_user.text, callback=self.res_login)
+        self.factory.Search(collection='NGUsers', 
+                                    conditions={"equalTo":{"Username":self.login.txt_user.text}}, 
+                                    callback=self.res_login)
         
-    def res_login(self, resultvar):
-        print resultvar
+    def res_login(self, results):
+        print "Login result: ", results
         
-        self.user = json.loads(resultvar)
+        results = json.loads(results)
+        
+        if len(results) == 0:
+            Msg(message="No user registered", title="Try again").open()
+            return
+            
+        self.user = results[0]
         
         #encrypt password from the login form
         hashpass = md5.new()
@@ -88,7 +102,8 @@ class NetgetBase(FloatLayout):
         if hashpass.hexdigest() == self.user['Password']:
             self.remove_widget(self.loading)
             self.remove_widget(self.login)
-            
+        else:
+            Msg(message="Your password does not match, please try again", title="Try again").open()
         
     def show_signup(self):
         print "Open signup"

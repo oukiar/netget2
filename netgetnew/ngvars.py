@@ -31,7 +31,7 @@ from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.widget import Widget
 import json
 
-from devslib.utils import Request
+from devslib.utils import Request   #for made http requests to any webserver
 
 class NGVar(Widget):
     varname = StringProperty()
@@ -40,7 +40,7 @@ class NGVar(Widget):
     objectId = NumericProperty(-1)
     appId = StringProperty()
     appKey = StringProperty()
-    serverUrl = StringProperty('http://104.236.181.245/ngcloud/')   #the digital ocean netget server
+    serverUrl = StringProperty('http://www.devsinc.com.mx/ngcloud/')   #the digital ocean netget server
     
         
     def save(self, **kwargs):
@@ -55,7 +55,7 @@ class NGVar(Widget):
                                 })
         
         #enviar peticion de creacion ... php backend por ahora
-        Request(action='http://www.devsinc.com.mx/ngcloud/extends.php', 
+        Request(action=self.serverUrl + 'extends.php', 
                 data=datadict, 
                 callback=callback)
         
@@ -73,8 +73,8 @@ class NGVar(Widget):
                                 'varname':self.varname
                                 })
         
-        #enviar peticion de creacion ... php backend por ahora
-        Request(action='http://www.devsinc.com.mx/ngcloud/select.php', 
+        #enviar peticion de search query
+        Request(action=self.serverUrl + 'select.php', 
                 data=datadict, 
                 callback=callback)
                 
@@ -82,6 +82,7 @@ class NGVar(Widget):
         print response
         
     def query(self, **kwargs):
+        
         pass
         
         
@@ -94,16 +95,31 @@ class NGFile(Widget):
     
 class NGFactory(Widget):
     
-    serverurl = StringProperty()
+    serverUrl = StringProperty('http://www.devsinc.com.mx/ngcloud/')
     
     def Connect(self):
         pass
 
     def Extends(self, name, **kwargs):
-        return NGVar(varname=name, serverUrl=self.serverurl, **kwargs)
+        return NGVar(varname=name, serverUrl=self.serverUrl, **kwargs)
 
-    def Search(self, name, **kwargs):
-        return NGVar(varname=name, **kwargs)
+    def Search(self, **kwargs):
+        callback = kwargs.pop('callback', self.res_search)
+        
+        datadict = kwargs.copy()
+        datadict.update({'collection':kwargs.get('collection'),
+                                'conditions':json.dumps(kwargs.get('conditions', {})),
+                                'like':kwargs.get('like', ''),
+                                'cols':kwargs.get('cols', '*')
+                                })
+        
+        #enviar peticion de search query
+        Request(action=self.serverUrl + 'select.php', 
+                data=datadict, 
+                callback=callback)
+                
+    def res_search(self, response):
+        print "Search response: ", response
         
     def Save(self, ngvar):
         ngvar.save()
@@ -116,7 +132,16 @@ if __name__ == '__main__':
     factory = NGFactory()
     ngvar = factory.Extends('Users')
     
-    ngvar.save(Name="Nat synapses", Email="natsynapses@gmail.com")
+    print "Name: "
+    name = raw_input()
+    
+    print "email: "
+    email = raw_input()
+    
+    ngvar.save(Name=name, Email=email)
+    
+    print "Search using factory: ", factory.Search(collection="Users")
+    #print "Thow ngvar object: ", ngvar.query()
     
     from kivy.base import runTouchApp
     
