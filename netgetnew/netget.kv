@@ -1,3 +1,6 @@
+#:kivy 1.8
+
+#:import ScrollBox devslib.scrollbox
 
 <Msg>:
     size_hint: (.5, .5)
@@ -35,12 +38,12 @@
             font_size: 36
         TextInput:
             id: txt_user
-            text: 'Username'
+            text: 'dexter_os86@hotmail.com'
             size_hint_y: None
             height: 40
         TextInput:
             id: txt_pass
-            text: 'Password'
+            text: 'dexware86'
             size_hint_y: None
             height: 40
             password: True
@@ -96,9 +99,67 @@
             text: "Create account"
             on_press: app.root.do_signup()
 
+<Chat@ScrollBox>:
+    size: (400,600)
+    Label:
+        size_hint_y: None
+        height: 60
+        text: "Contact one"
+    Label:
+        size_hint_y: None
+        height: 60
+        text: "Contact one"
+    Label:
+        size_hint_y: None
+        height: 60
+        text: "Contact one"
+    Label:
+        size_hint_y: None
+        height: 60
+        text: "Contact one"
+    Label:
+        size_hint_y: None
+        height: 60
+        text: "Contact one"
 
-<NetgetGui>:
+<LeftSection@BoxLayout>:
+    orientation: "vertical"
+    Label:
+        size_hint_y: None
+        text: "Neurons Arts & Technology"
+        
+    Chat:
+        orientation: "vertical"
+
+<CenterSection@AnchorLayout>:
+    anchor_y: "top"
     BoxLayout:
+        size_hint_y: None
+        height: 30
+        Image:
+            source: "images/find_48x48.png"
+            size_hint_x: None
+            width: 64
+            
+        TextInput:
+            text: "Search here!"
+    
+<NetgetRadar@Widget3D>:
+    
+<RightSection@BoxLayout>:
+    NetgetRadar:
+    Image:
+        source: "images/network_64x64.png"
+    
+    
+
+<NetgetSession>:
+    BoxLayout:
+        LeftSection:
+        
+        CenterSection:
+        
+        RightSection:
 
 <NetgetBase>:
     login:login
