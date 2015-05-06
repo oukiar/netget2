@@ -2,6 +2,7 @@
 from kivy.uix.popup import Popup
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty, StringProperty
 
 from ngvars import NGFactory
@@ -18,6 +19,10 @@ import json
   
 class Msg(Popup):
     message = StringProperty()
+  
+  
+class FriendsList(BoxLayout):
+    pass
   
 class NetgetLogin(AnchorLayout):
     txt_user = ObjectProperty()
@@ -104,6 +109,7 @@ class NetgetBase(FloatLayout):
             self.remove_widget(self.login)
         else:
             Msg(message="Your password does not match, please try again", title="Try again").open()
+            self.remove_widget(self.loading)
         
     def show_signup(self):
         print "Open signup"
